@@ -303,7 +303,7 @@ public class Client
         System.out.println(printers);
     }
 
-    public static void getAvailableJobs(ClientToPrinter client, Scanner scanner, String printerName, UUID uniqueUserToken) throws MalformedURLException, RemoteException, NotBoundException {
+    public static void getAvailableJobs(ClientToPrinter client, Scanner scanner, String printerName, UUID uniqueUserToken) throws MalformedURLException, RemoteException, NotBoundException, IOException {
         // Function to output all available jobs
         String available;
         String jobs = "";
