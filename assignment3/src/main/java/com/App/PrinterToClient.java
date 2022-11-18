@@ -17,6 +17,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     private List<Printer> printers = new ArrayList<>(); // List of printers
     private List<Parameter> parameters = new ArrayList<>();
     private UUID uniqueUserIdentifier; // Unique user identifier
+    private boolean serverStatus = false; // Server status
 
 
     public PrinterToClient(String name) throws RemoteException {
@@ -26,7 +27,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String print(String filename, String printer, UUID userToken) throws IOException { // Print a file
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is not running";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
@@ -50,7 +53,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String queue(String printer, UUID userToken) throws IOException { // Get queue for a printer
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus) {
+                return "Server is not running";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
@@ -73,7 +78,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String topQueue(String printer, int job, UUID userToken) throws IOException { //job = job number in queue to be moved to top of queue
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is not running";
+            }
 
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
@@ -97,12 +104,14 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String Start(UUID userToken) throws IOException { //  start the print server
         if (SessionAuth.validateSession(userToken)) {
-
+            if(serverStatus){
+                return "Server is already running";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
 
-
+                serverStatus = true;
                 return "Server is starting";
 
             } else {
@@ -116,11 +125,13 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String Stop(UUID userToken) throws IOException { // stop the print server
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is already stopped";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
-
+                serverStatus = false;
                 return "Stopping the server";
             } else {
                 return "You have no access to this operation";
@@ -162,7 +173,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String status(String printer, UUID userToken) throws IOException { // status of the printer
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is stopped";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
@@ -188,7 +201,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String readConfig(String parameter, UUID userToken) throws IOException { // read the configuration file
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is stopped";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
@@ -213,7 +228,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String setConfig(String parameter, String value, UUID userToken) throws IOException { // set a configuration parameter
         if (SessionAuth.validateSession(userToken)) {
-
+            if(!serverStatus){
+                return "Server is stopped";
+            }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (AccessControl.accessControlStatus(username, "print") == 1) {
                 System.out.println("You can do this action");
@@ -282,7 +299,9 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String createUser(String username, String password, UUID userToken) throws RemoteException {
         if (SessionAuth.validateSession(userToken)) { // Only allow a user to be created if session is valid
-
+            if(!serverStatus){
+                return "Server is stopped";
+            }
             try {
                 // Create file if it dosen't exist. Boolean in FileWriter makes sure we append to file and don't overwrite.
                 File file = new File("password.txt");

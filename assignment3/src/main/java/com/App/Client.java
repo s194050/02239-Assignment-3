@@ -15,7 +15,6 @@ public class Client
         ClientToPrinter client1 = (ClientToPrinter) Naming.lookup("rmi://localhost:1099/ClientToPrinter"); // Connect to server
         boolean run = true; // Used to keep the GUI running
         boolean loggedIn = false; // Keeps track of whether the user is logged in or not
-        boolean serverStatus = false; // Simple flag to hanldes server status
         UUID uniqueUserToken = null; // Used to store the UUID of the user
         Scanner scanner = new Scanner(System.in);
 
@@ -27,6 +26,7 @@ public class Client
         String printer = "";
         String parameter = "";
         String output = "";
+        String serverStatus = "";
 
         for (int i = 0; i < printers.length; i++) { // Add printers
             client1.addPrinter(printers[i]);
@@ -79,184 +79,163 @@ public class Client
 
                 switch (selection) { // Handle the selection
                     case 1:
-                        if (!serverStatus) { // Check if the server is already running
-                            System.out.println(client1.Start(uniqueUserToken)); // Start the server
-                            serverStatus = true;
+                        serverStatus = client1.Start(uniqueUserToken);
+                        if (serverStatus.equals("Server is starting")) { // Check if the server is already running
+                            System.out.println(serverStatus); // Start the server
                             break;
                         } else {
-                            System.out.println("Server has already started!\n");
+                            System.out.println(serverStatus); // Otherwise, print the error message
                             break;
                         }
 
                     case 2:
-                        if (serverStatus) { // Check if the server is not running
-                            System.out.println(client1.Stop(uniqueUserToken)); // Stop the server
-                            serverStatus = false;
+                        serverStatus = client1.Stop(uniqueUserToken);
+                        if (serverStatus.equals("Stopping the server")) { // Check if the server is not running
+                            System.out.println(serverStatus); // Stop the server
                             break;
                         } else {
-                            System.out.println("Server is not running\n");
+                            System.out.println(serverStatus); // Otherwise, print the error message
                             break;
                         }
 
                     case 3:
-                        if (serverStatus) {
+                        serverStatus = client1.Restart(uniqueUserToken);
+                        if (serverStatus.equals("Server restarted")) {
                             System.out.println("Restarting server\n");
-                            System.out.println(client1.Restart(uniqueUserToken)); // Restart the server
+                            System.out.println(serverStatus); // Restart the server
                             break;
                         } else {
-                            System.out.println("Server is not running\n");
+                            System.out.println(serverStatus); // Otherwise, print the error message
                             break;
                         }
 
                     case 4:
-                        if (serverStatus) {
-                            getAvailablePrinters(client1, scanner); // Get available printers
-                            System.out.println("Enter the name of the printer you want to print on: ");
+                        
+                        getAvailablePrinters(client1, scanner); // Get available printers
+                        System.out.println("Enter the name of the printer you want to print on: ");
 
-                            printer = scanner.next() + scanner.nextLine();
-                            if (client1.getPrinter(printer) == null) { // If the printer doesn't exist, break
-                                System.out.println("Printer does not exist, try again\n");
-                                break;
-                            }
-
-                            System.out.println("Enter the name of the file you want to print: ");
-
-                            String filename = scanner.next() + scanner.nextLine(); 
-
-                            output = client1.print(filename, printer, uniqueUserToken); // Print the file
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        printer = scanner.next() + scanner.nextLine();
+                        if (client1.getPrinter(printer) == null) { // If the printer doesn't exist, break
+                            System.out.println("Printer does not exist, try again\n");
                             break;
                         }
+
+                        System.out.println("Enter the name of the file you want to print: ");
+
+                        String filename = scanner.next() + scanner.nextLine(); 
+
+                        output = client1.print(filename, printer, uniqueUserToken); // Print the file
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
+                            break;
+                        }
+                        
 
                     case 5:
-                        if (serverStatus) {
-                            getAvailablePrinters(client1, scanner); // Get available printers
-                            System.out.println("Enter the name of the printer you want to see the job queue of: ");
-                            printer = scanner.next() + scanner.nextLine();
+                    
+                        getAvailablePrinters(client1, scanner); // Get available printers
+                        System.out.println("Enter the name of the printer you want to see the job queue of: ");
+                        printer = scanner.next() + scanner.nextLine();
 
-                            if (client1.getPrinter(printer) == null) { // Check if the printer exists
-                                System.out.println("Printer does not exist, try again\n");
-                                break;
-                            }
-
-                            output = client1.queue(printer, uniqueUserToken); // Get the job queue
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        if (client1.getPrinter(printer) == null) { // Check if the printer exists
+                            System.out.println("Printer does not exist, try again\n");
                             break;
                         }
+
+                        output = client1.queue(printer, uniqueUserToken); // Get the job queue
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
+                            break;
+                        }
+                        
                     case 6:
-                        if (serverStatus) {
-                            getAvailablePrinters(client1, scanner); // Get available printers
-                            System.out.println("Enter the name of the printer you want to change the job queue of: ");
-                            printer = scanner.next() + scanner.nextLine();
-                            if (client1.getPrinter(printer) == null) { // Check if the printer exists
-                                System.out.println("Printer does not exist, try again\n");
-                                break;
-                            }
-
-                            getAvailableJobs(client1, scanner, printer,uniqueUserToken); // Get available jobs
-                            System.out.println("Enter the job number you want to move to the top of the queue: ");
-                            try {
-                                job = Integer.parseInt(scanner.next() + scanner.nextLine());
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid input, try again\n"); // If not an integer allow user to try again
-                                break;
-                            }
-
-                            if (client1.getJobID(job, printer) == -1) { // Check if the job exists
-                                System.out.println("Job does not exist, try again\n");
-                                break;
-                            }
-
-                            output = client1.topQueue(printer, job, uniqueUserToken); // Move the job to the top of the queue
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        getAvailablePrinters(client1, scanner); // Get available printers
+                        System.out.println("Enter the name of the printer you want to change the job queue of: ");
+                        printer = scanner.next() + scanner.nextLine();
+                        if (client1.getPrinter(printer) == null) { // Check if the printer exists
+                            System.out.println("Printer does not exist, try again\n");
                             break;
                         }
+
+                        getAvailableJobs(client1, scanner, printer,uniqueUserToken); // Get available jobs
+                        System.out.println("Enter the job number you want to move to the top of the queue: ");
+                        try {
+                            job = Integer.parseInt(scanner.next() + scanner.nextLine());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input, try again\n"); // If not an integer allow user to try again
+                            break;
+                        }
+
+                        if (client1.getJobID(job, printer) == -1) { // Check if the job exists
+                            System.out.println("Job does not exist, try again\n");
+                            break;
+                        }
+
+                        output = client1.topQueue(printer, job, uniqueUserToken); // Move the job to the top of the queue
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
+                            break;
+                        }
+                       
                     case 7:
-                        if (serverStatus) {
-                            getAvailablePrinters(client1, scanner);
-                            System.out.println("Enter the name of the printer you want to check status of: ");
-                            printer = scanner.next() + scanner.nextLine();
-                            output = client1.status(printer, uniqueUserToken); // Get the status of the printer
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        getAvailablePrinters(client1, scanner);
+                        System.out.println("Enter the name of the printer you want to check status of: ");
+                        printer = scanner.next() + scanner.nextLine();
+                        output = client1.status(printer, uniqueUserToken); // Get the status of the printer
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
                             break;
                         }
+                        
                     case 8:
-                        if (serverStatus) {
-                            getAvailableParameters(client1, scanner);
-                            System.out.println("Enter the name of the config parameter you want to read: ");
-                            parameter = scanner.next() + scanner.nextLine();
+                        getAvailableParameters(client1, scanner);
+                        System.out.println("Enter the name of the config parameter you want to read: ");
+                        parameter = scanner.next() + scanner.nextLine();
 
-                            output = client1.readConfig(parameter, uniqueUserToken); // Read the config parameter
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        output = client1.readConfig(parameter, uniqueUserToken); // Read the config parameter
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
                             break;
                         }
+                       
                     case 9:
-                        if (serverStatus) {
-                            getAvailableParameters(client1, scanner);
-                            System.out.println("Enter the name of the config parameter you want to set: \n " +
-                                    "If you want to add a new parameter, enter the name of the parameter you want to add");
-                            parameter = scanner.next() + scanner.nextLine();
-                            System.out.println("Enter the value you want to set the config parameter to: ");
+                        getAvailableParameters(client1, scanner);
+                        System.out.println("Enter the name of the config parameter you want to set: \n " +
+                                "If you want to add a new parameter, enter the name of the parameter you want to add");
+                        parameter = scanner.next() + scanner.nextLine();
+                        System.out.println("Enter the value you want to set the config parameter to: ");
 
-                            String value = scanner.next() + scanner.nextLine();
-                            output = client1.setConfig(parameter, value, uniqueUserToken); // Set the config parameter
-                            if(output.equals("Session Invalid")){ // If the session is invalid, break
-                                System.out.println("Session expired, please login again\n");
-                                loggedIn = false;
-                                break;
-                            }else{
-                                System.out.println(output);
-                                break;
-                            }
-                        } else {
-                            System.out.println("Server is not running\n");
+                        String value = scanner.next() + scanner.nextLine();
+                        output = client1.setConfig(parameter, value, uniqueUserToken); // Set the config parameter
+                        if(output.equals("Session Invalid")){ // If the session is invalid, break
+                            System.out.println("Session expired, please login again\n");
+                            loggedIn = false;
+                            break;
+                        }else{
+                            System.out.println(output);
                             break;
                         }
+                        
                     case 10:
                             run = false;
                             System.out.println(client1.logout(uniqueUserToken)); // Logout
@@ -264,22 +243,18 @@ public class Client
                             System.out.println("Exiting...");
                             System.exit(0);
                     case 11:
-                        if(serverStatus){
-                            if (!username.equals("root")) {
-                                // this error message can give information to a hacker
-                                // System.out.println("You do not have permission to use this command");
-                                break;
-                            }
-                            System.out.println("Enter username");
-                            String temp_username = scanner.next() + scanner.nextLine();
-                            System.out.println("Enter password");
-                            String temp_password = scanner.next() + scanner.nextLine();
-                            System.out.println(client1.createUser(temp_username, temp_password, uniqueUserToken)); // Create user
+                        if (!username.equals("root")) {
+                            // this error message can give information to a hacker
+                            // System.out.println("You do not have permission to use this command");
                             break;
-                        }else{
-                            System.out.println("Server is not running\n");
-                            break;
-                        }  
+                        }
+                        System.out.println("Enter username");
+                        String temp_username = scanner.next() + scanner.nextLine();
+                        System.out.println("Enter password");
+                        String temp_password = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.createUser(temp_username, temp_password, uniqueUserToken)); // Create user
+                        break;
+                         
                     default:
                         System.out.println("Invalid selection\n");
                         break;
