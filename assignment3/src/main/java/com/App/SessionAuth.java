@@ -65,8 +65,7 @@ public class SessionAuth {
     public static String getUsernameFromToken(UUID uniqueUserIdentifier) {
         for (Token token : tokens) {
             if (token.getUniqueUserIdentifier().equals(uniqueUserIdentifier)) { // Check if user is logged in
-                tokens.remove(token);
-                return token.getUser();
+                return token.getUser(); // Return username
             }
         }
         return null;
