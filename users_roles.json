@@ -1,0 +1,20 @@
+{
+    "name": "UserRoles",
+    "roles":{
+        "admin": [
+            "Alice"
+        ],
+        "service_technician": [
+            "Bob"
+        ],
+        "power_user": [
+            "Cecilia"
+        ],
+        "user": [
+            "David",
+            "Erica",
+            "Fred",
+            "George"
+        ]        
+    }
+}

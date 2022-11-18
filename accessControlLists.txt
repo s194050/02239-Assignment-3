@@ -1,6 +1,6 @@
-Alice:print;queue;topQueue;start;stop;restart;status;readConfig;setConfig
-Bob:start;stop;restart;status;readConfig;setConfig
-Cecilia:print;queue;topQueue;restart
+Alice:print;queue;topQueue;Start;Stop;Restart;status;readConfig;setConfig
+Bob:Start;Stop;Restart;status;readConfig;setConfig
+Cecilia:print;queue;topQueue;Restart
 David:print;queue
 Erica:print;queue
 Fred:print;queue
