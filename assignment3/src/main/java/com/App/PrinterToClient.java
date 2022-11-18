@@ -10,7 +10,6 @@ import org.json.simple.parser.ParseException;
 
 import com.Domain.Parameter;
 import com.Domain.Printer;
-import com.Domain.Token;
 import com.AccessControl.AccessControl;
 
 public class PrinterToClient extends UnicastRemoteObject implements ClientToPrinter { // Printer to Client interface
@@ -26,14 +25,15 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     }
 
     AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control
-
+    
     public String print(String filename, String printer, UUID userToken) throws IOException, ParseException { // Print a file
+        accessControl.createUser("Boby", "power_user");
         if (SessionAuth.validateSession(userToken)) {
             if(!serverStatus){
                 return "Server is not running";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "print") == 1) {
+            if (accessControl.validateUserPermissions(username, "print")) {
                 System.out.println("You can do this action");
 
                 for (Printer specficPrinter : printers) { // Loop through printers
@@ -59,7 +59,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is not running";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "queue") == 1) {
+            if (accessControl.validateUserPermissions(username, "queue")) {
                 System.out.println("You can do this action");
 
 
@@ -85,7 +85,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
 
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "topQueue") == 1) {
+            if (accessControl.validateUserPermissions(username, "topQueue")) {
                 System.out.println("You can do this action");
 
 
@@ -110,7 +110,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is already running";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "Start") == 1) {
+            if (accessControl.validateUserPermissions(username, "Start")) {
                 System.out.println("You can do this action");
 
                 serverStatus = true;
@@ -131,7 +131,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is already stopped";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "Stop") == 1) {
+            if (accessControl.validateUserPermissions(username, "Stop")) {
                 System.out.println("You can do this action");
                 serverStatus = false;
                 return "Stopping the server";
@@ -147,7 +147,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
         if (SessionAuth.validateSession(userToken)) {
 
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "Restart") == 1) {
+            if (accessControl.validateUserPermissions(username, "Restart")) {
                 System.out.println("You can do this action");
 
                 Timer timer = new Timer();
@@ -179,7 +179,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is stopped";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "status") == 1) {
+            if (accessControl.validateUserPermissions(username, "status")) {
                 System.out.println("You can do this action");
 
                 for (Printer printer_element : printers) {
@@ -207,7 +207,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is stopped";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "readConfig") == 1) {
+            if (accessControl.validateUserPermissions(username, "readConfig")) {
                 System.out.println("You can do this action");
 
 
@@ -234,7 +234,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is stopped";
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
-            if (accessControl.validateUserPermissions(username, "setConfig") == 1) {
+            if (accessControl.validateUserPermissions(username, "setConfig")) {
                 System.out.println("You can do this action");
 
 
@@ -406,5 +406,3 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
 
 }
-    
-
