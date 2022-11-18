@@ -1,5 +1,10 @@
 package com.AccessControl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
 // import 
 
 public abstract class AccessControl {
@@ -19,7 +24,7 @@ public abstract class AccessControl {
     }
 
 
-     public void loadAccessControlFile(){
+     public void loadAccessControlFile() throws FileNotFoundException, IOException, ParseException{
         System.out.println("Loading Access Control File not implemented");
     }
 

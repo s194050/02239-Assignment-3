@@ -1,11 +1,8 @@
 package com.AccessControl;
 
-// import java.io.FileNotFoundException;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
-import java.io.FileNotFor;
-impout java.io.IOExceptionndException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -17,7 +14,11 @@ class RoleBasedAccessControl extends AccessControl{
     @Override
     public void loadAccessControlFile() throws FileNotFoundException, IOException, ParseException{
         JSONParser parser = new JSONParser();
-        JSONArray a = (JSONArray) parser.parse(new FileReader("Role_based_access_control.json"));
+        Object obj = parser.parse(new FileReader("Role_based_access_control.json"));
+        JSONObject jsonObject = (JSONObject) obj;
+        String name = (String) jsonObject.get("name");
+        JSONArray roles = (JSONArray) jsonObject.get("roles");
+        JSONArray permissions = (JSONArray) jsonObject.get("permissions");
 
     }
 
