@@ -1,0 +1,36 @@
+{
+    "name": "RBAC",
+    "roles": ["admin", "service_technician", "power_user", "user"],
+    "permissions":{
+        "admin": [ 
+            "print",
+            "queue",
+            "topQueue",
+            "Start",
+            "Stop",
+            "Restart",
+            "status",
+            "readConfig",
+            "setConfig",
+            "createUser"
+        ],
+        "service_technician": [
+            "Start",
+            "Stop",
+            "Restart",
+            "status", 
+            "readConfig", 
+            "setConfig"
+        ],
+        "power_user": [
+            "print", 
+            "queue", 
+            "topQueue", 
+            "Restart"
+        ],
+        "user": [
+            "print", 
+            "queue"
+        ]
+    }
+}

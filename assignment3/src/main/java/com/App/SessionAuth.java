@@ -57,5 +57,17 @@ public class SessionAuth {
             return false; // Token has timed out
         }
     }
-    
+
+    public static List<Token> getTokens() {
+        return tokens;
+    }
+
+    public static String getUsernameFromToken(UUID uniqueUserIdentifier) {
+        for (Token token : tokens) {
+            if (token.getUniqueUserIdentifier().equals(uniqueUserIdentifier)) { // Check if user is logged in
+                return token.getUser(); // Return username
+            }
+        }
+        return null;
+    }
 }
