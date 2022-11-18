@@ -1,6 +1,4 @@
 package com.AccessControl;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
@@ -23,17 +21,7 @@ public abstract class AccessControl {
         } 
     }
 
-
-     public void loadAccessControlFile() throws FileNotFoundException, IOException, ParseException{
-        System.out.println("Loading Access Control File not implemented");
+    public int validateUserPermissions(String username, String function) throws IOException, ParseException {
+        return 0;
     }
-
-    // public JSONObject
-
-
-    public boolean validateUserPermissions(String username, String function){
-        System.out.println("Validating user can execute function");
-        return false;
-    }
-
 }

@@ -8,9 +8,11 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import org.json.simple.parser.ParseException;
+
 public class Client
 {
-    public static void main( String[] args ) throws MalformedURLException, RemoteException, NotBoundException, InterruptedException {
+    public static void main( String[] args ) throws MalformedURLException, RemoteException, NotBoundException, InterruptedException, ParseException {
         String[] printers = {"Printer1", "Printer2", "Printer3", "Printer4", "Printer5"}; // List of printers
         ClientToPrinter client1 = (ClientToPrinter) Naming.lookup("rmi://localhost:1099/ClientToPrinter"); // Connect to server
         boolean run = true; // Used to keep the GUI running
@@ -278,7 +280,7 @@ public class Client
         System.out.println(printers);
     }
 
-    public static void getAvailableJobs(ClientToPrinter client, Scanner scanner, String printerName, UUID uniqueUserToken) throws MalformedURLException, RemoteException, NotBoundException, IOException {
+    public static void getAvailableJobs(ClientToPrinter client, Scanner scanner, String printerName, UUID uniqueUserToken) throws MalformedURLException, RemoteException, NotBoundException, IOException, ParseException {
         // Function to output all available jobs
         String available;
         String jobs = "";
