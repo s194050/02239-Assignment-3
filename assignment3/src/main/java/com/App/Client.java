@@ -1,5 +1,6 @@
 package com.App;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -283,7 +284,7 @@ public class Client
                         System.out.println("Invalid selection\n");
                         break;
                 }
-                }catch (NumberFormatException e){
+                }catch (NumberFormatException | IOException e){
                     System.out.println("Invalid input, try again\n");
                 }
         }
