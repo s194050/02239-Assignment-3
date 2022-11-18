@@ -1,4 +1,5 @@
 Alice:print;queue;topQueue;start;stop;restart;status;readConfig;setConfig
+root:print;queue;topQueue;start;stop;restart;status;readConfig;setConfig;createUser
 Bob:start;stop;restart;status;readConfig;setConfig
 Cecilia:print;queue;topQueue;restart
 David:print;queue
