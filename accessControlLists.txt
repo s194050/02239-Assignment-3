@@ -4,5 +4,5 @@ Cecilia:print;queue;topQueue;restart
 David:print;queue
 Erica:print;queue
 Fred:print;queue
-George:print;queue;start;stop;restart;status;readConfig;setConfig
+George:print;queue
 
