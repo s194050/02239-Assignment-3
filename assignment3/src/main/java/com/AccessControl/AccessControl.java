@@ -31,7 +31,12 @@ public abstract class AccessControl {
         return false;
     }
 
-    public boolean changeUserRole(String username, String role) throws IOException, FileNotFoundException, ParseException {
+    public boolean changeUserRole(String username, String role)
+            throws IOException, FileNotFoundException, ParseException {
+        return false;
+    }
+    
+    public boolean isUserAdmin(String username) throws ParseException {
         return false;
     }
 }

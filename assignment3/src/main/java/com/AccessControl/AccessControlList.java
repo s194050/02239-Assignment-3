@@ -30,5 +30,10 @@ public class AccessControlList extends AccessControl {
         reader.close();
         return status;
     }
+
+    @Override
+    public boolean isUserAdmin(String username) throws ParseException {
+        return false;
+    }
 }
 

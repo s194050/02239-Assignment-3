@@ -1,1 +1,1 @@
-{"roles":{"service_technician":["Bob"],"admin":["Alice","Billy-Bob"],"power_user":["Cecilia"],"user":["David","Erica","Fred","George"]},"name":"UserRoles"}
+{"roles":{"service_technician":["Bob"],"admin":["Alice"],"power_user":["Cecilia"],"user":["David","Erica","Fred","George"]},"name":"UserRoles"}

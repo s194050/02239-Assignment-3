@@ -12,6 +12,64 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.*;
 
 class RoleBasedAccessControl extends AccessControl {
+    private boolean roleExists(String role) throws IOException, FileNotFoundException, ParseException {
+        boolean roleExists = false;
+        JSONParser parser = new JSONParser();
+        Object rbac_ = parser.parse(new FileReader("role_based_access_control.json"));
+        JSONObject rbac = (JSONObject) rbac_;
+        JSONArray roles = (JSONArray) rbac.get("roles");
+        for (int i = 0; i < roles.size(); i++) {
+            String this_role = roles.get(i).toString();
+            if (this_role.equals(role)) {
+                roleExists = true;
+                break;
+            }
+        }
+
+        return roleExists;
+    }
+    
+    private boolean userAlreadyInAccessControl(String username, String role) throws IOException, FileNotFoundException, ParseException {
+        boolean userAlreadyInAccessControl = false;
+        JSONParser parser = new JSONParser();
+        Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
+        JSONObject users_roles = (JSONObject) users_roles_;
+        JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
+        JSONArray users = (JSONArray) roles_with_names.get(role);
+        for (int i = 0; i < users.size(); i++) {
+            String this_user = users.get(i).toString();
+            if (this_user.equals(username)) {
+                userAlreadyInAccessControl = true;
+                break;
+            }
+        }
+        return userAlreadyInAccessControl;
+    }
+
+    @Override
+    public boolean isUserAdmin(String username) throws ParseException {
+        boolean isAdmin = false;
+        try {
+            JSONParser parser = new JSONParser();
+            Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
+            JSONObject users_roles = (JSONObject) users_roles_;
+            JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
+            JSONArray admins = (JSONArray) roles_with_names.get("admin");
+            for (int i = 0; i < admins.size(); i++) {
+                String this_admin = admins.get(i).toString();
+                if (this_admin.equals(username)) {
+                    isAdmin = true;
+                    return isAdmin;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isAdmin;
+    }
+
     @Override
     public boolean validateUserPermissions(String username, String function)
             throws IOException, FileNotFoundException, ParseException {
@@ -48,25 +106,38 @@ class RoleBasedAccessControl extends AccessControl {
     @Override
     public boolean createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
+        
+        if (!roleExists(role)) {
+            System.out.println("Role does not exist");
+            return status;
+        }
+        if (userAlreadyInAccessControl(username, role)) {
+            System.out.println("User already in access control");
+            return status;
+        }
+
         try{
-        JSONParser parser = new JSONParser();
-        Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
-        JSONObject users_roles = (JSONObject) users_roles_;
+            JSONParser parser = new JSONParser();
 
-        JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
-        JSONArray users = (JSONArray) roles_with_names.get(role);
-        users.add(username);
-        roles_with_names.put(role, users);
-        users_roles.put("roles", roles_with_names);
+            Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
+            JSONObject users_roles = (JSONObject) users_roles_;
 
-        FileWriter fstream = new FileWriter("users_roles.json", false);
-        BufferedWriter out = new BufferedWriter(fstream);
-        // Write to file and make a new line.
-        out.write(users_roles.toJSONString());
-        out.flush();
-        out.close();
-        status = true;
-        return status;
+            JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
+            JSONArray users = (JSONArray) roles_with_names.get(role);
+
+            // if the user does not exist, add the user to the role
+            users.add(username);
+            roles_with_names.put(role, users);
+            users_roles.put("roles", roles_with_names);
+
+            FileWriter fstream = new FileWriter("users_roles.json", false);
+            BufferedWriter out = new BufferedWriter(fstream);
+            // Write to file and make a new line.
+            out.write(users_roles.toJSONString());
+            out.flush();
+            out.close();
+            status = true;
+            return status;
         }
         catch(Exception e){
             return status;
@@ -83,38 +154,44 @@ class RoleBasedAccessControl extends AccessControl {
 
         JSONObject roles_with_names = (JSONObject) users_roles.get("roles"); // get the roles object
         try {
-        for(int i = 0; i < roles_with_names.size(); i++) { // iterate through the roles
+            for(int i = 0; i < roles_with_names.size(); i++) { // iterate through the roles
+                String role = roles_with_names.keySet().toArray()[i].toString(); // get the role name
+                JSONArray users = (JSONArray) roles_with_names.get(role); // get the users for the role
 
-            String role = roles_with_names.keySet().toArray()[i].toString(); // get the role name
-           
-            JSONArray users = (JSONArray) roles_with_names.get(role); // get the users for the role
-
-            for(int j = 0; j < users.size(); j++) { // iterate through the users
-                if(users.get(j).toString().equals(username)) { // if the user is found
-                    users.remove(j); // remove the user
-                    roles_with_names.put(role,users); // update the users for the role
-                    users_roles.put("roles", roles_with_names); // update the roles_with_names
-                    status = true;
-                    break;
+                for(int j = 0; j < users.size(); j++) { // iterate through the users
+                    if(users.get(j).toString().equals(username)) { // if the user is found
+                        users.remove(j); // remove the user
+                        roles_with_names.put(role, users); // update the users for the role
+                        users_roles.put("roles", roles_with_names); // update the roles_with_names
+                        status = true;
+                        break;
+                    }
                 }
             }
+            FileWriter fstream = new FileWriter("users_roles.json", false);
+            BufferedWriter out = new BufferedWriter(fstream);
+            // Write to file
+            out.write(users_roles.toJSONString());
+            out.flush();
+            out.close();
+            return status;
+        }catch(Exception e){
+            return status;
         }
-        FileWriter fstream = new FileWriter("users_roles.json", false);
-        BufferedWriter out = new BufferedWriter(fstream);
-        // Write to file
-        out.write(users_roles.toJSONString());
-        out.flush();
-        out.close();
-        return status;
-    }catch(Exception e){
-        return status;
     }
-    }
-
 
     @Override
     public boolean changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
+        if (!roleExists(newRole)) {
+            System.out.println("Role does not exist");
+            return status;
+        }
+        if (userAlreadyInAccessControl(username, newRole)) {
+            System.out.println("User already in has this role's permissions");
+            return status;
+        }
+        
         status = deleteUser(username);
         if(status) {
             status = createUser(username, newRole);

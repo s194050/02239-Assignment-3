@@ -1,5 +1,4 @@
 package com.App;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -7,6 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.UUID;
+import com.AccessControl.AccessControl;
 
 import org.json.simple.parser.ParseException;
 
@@ -79,7 +79,8 @@ public class Client
                 if (username.equals("root")) { // If the user is root, allow them to create users
                     System.out.println("11: Create a user\n");
                 }
-                if (username.equals("Alice")) { // If the user is root, allow them to create users
+                AccessControl accessControl = AccessControl.runACL("RBAC"); // Create an instance of the access control class
+                if (accessControl.isUserAdmin(username)) { // If the user is admin, allow them to create users
                     System.out.println("\nAccess Control Options:\n \t \t 12: Add a user to the access control\n \t\t" +
                         " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control\n");
                 }
@@ -118,8 +119,7 @@ public class Client
                             break;
                         }
 
-                    case 4:
-                        
+                    case 4: 
                         getAvailablePrinters(client1, scanner); // Get available printers
                         System.out.println("Enter the name of the printer you want to print on: ");
 
@@ -145,7 +145,6 @@ public class Client
                         
 
                     case 5:
-                    
                         getAvailablePrinters(client1, scanner); // Get available printers
                         System.out.println("Enter the name of the printer you want to see the job queue of: ");
                         printer = scanner.next() + scanner.nextLine();
@@ -264,9 +263,8 @@ public class Client
                         System.out.println(client1.createUser(temp_username, temp_password, uniqueUserToken)); // Create user
                         break;
                     case 12:
-                        if (!username.equals("Alice")) {
-                            // this error message can give information to a hacker
-                            // System.out.println("You do not have permission to use this command");
+                        if (!accessControl.isUserAdmin(username)) {
+                            System.out.println("Invalid selection\n");
                             break;
                         }
                         System.out.println("Enter the username of the user you want to add to the access control");
@@ -276,9 +274,8 @@ public class Client
                         System.out.println(client1.addUserToAccessControl(temp_username, temp_role, uniqueUserToken)); // Delete user
                         break;
                     case 13:
-                        if (!username.equals("Alice")) {
-                            // this error message can give information to a hacker
-                            // System.out.println("You do not have permission to use this command");
+                        if (!accessControl.isUserAdmin(username)) {
+                            System.out.println("Invalid selection\n");
                             break;
                         }
                         System.out.println("Enter the username of the user you want to delete from the access control");
@@ -286,9 +283,8 @@ public class Client
                         System.out.println(client1.deleteUserFromAccessControl(temp_username, uniqueUserToken)); // Delete user
                         break;
                     case 14:
-                        if (!username.equals("Alice")) {
-                            // this error message can give information to a hacker
-                            // System.out.println("You do not have permission to use this command");
+                        if (!accessControl.isUserAdmin(username)) {
+                            System.out.println("Invalid selection\n");
                             break;
                         }
                         System.out.println("Enter the username of the user you want to change the role of ");

@@ -405,10 +405,28 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     public String addUserToAccessControl(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException {
         if (SessionAuth.validateSession(userToken)) {
-            if(!serverStatus){
+            if (!serverStatus) {
                 return "Server is stopped";
             }
 
+            // check if username exists
+            boolean name_exist = false;
+            File myObj = new File("password.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                String name = data.substring(0, data.indexOf(':'));
+                if (username.equals(name)) {
+                    name_exist = true;
+                }
+            }
+            myReader.close();
+            // 
+            if (!name_exist) {
+                return "User " + username + " does not exist";
+            }
+            
+            // if user exists
             boolean Status = accessControl.createUser(username, role);
             if (Status) {
                 return "User " + username + " added to access control with role " + role;
