@@ -1,4 +1,5 @@
 package com.App;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -25,6 +26,9 @@ public interface ClientToPrinter extends Remote{ // Client to Printer interface
     public String login(String username, String password) throws RemoteException;
     public UUID getUniqueUserIdentifier() throws RemoteException;
     public String logout(UUID userToken) throws RemoteException;
+    public String addUserToAccessControl(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException;
+    public String deleteUserFromAccessControl(String username, UUID userToken) throws FileNotFoundException, IOException, ParseException;
+    public String changeRolePermission(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException;
 }
 
 

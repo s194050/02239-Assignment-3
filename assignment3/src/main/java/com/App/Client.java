@@ -29,6 +29,9 @@ public class Client
         String parameter = "";
         String output = "";
         String serverStatus = "";
+        String temp_username = "";
+        String temp_password = "";
+        String temp_role = "";
 
         for (int i = 0; i < printers.length; i++) { // Add printers
             client1.addPrinter(printers[i]);
@@ -75,6 +78,10 @@ public class Client
 
                 if (username.equals("root")) { // If the user is root, allow them to create users
                     System.out.println("11: Create a user\n");
+                }
+                if (username.equals("Alice")) { // If the user is root, allow them to create users
+                    System.out.println("\nAccess Control Options:\n \t \t 12: Add a user to the access control\n \t\t" +
+                        " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control\n");
                 }
 
                 selection = Integer.parseInt(scanner.next() + scanner.nextLine()); // Get the user input
@@ -251,10 +258,44 @@ public class Client
                             break;
                         }
                         System.out.println("Enter username");
-                        String temp_username = scanner.next() + scanner.nextLine();
+                        temp_username = scanner.next() + scanner.nextLine();
                         System.out.println("Enter password");
-                        String temp_password = scanner.next() + scanner.nextLine();
+                        temp_password = scanner.next() + scanner.nextLine();
                         System.out.println(client1.createUser(temp_username, temp_password, uniqueUserToken)); // Create user
+                        break;
+                    case 12:
+                        if (!username.equals("Alice")) {
+                            // this error message can give information to a hacker
+                            // System.out.println("You do not have permission to use this command");
+                            break;
+                        }
+                        System.out.println("Enter the username of the user you want to add to the access control");
+                        temp_username = scanner.next() + scanner.nextLine();
+                        System.out.println("Enter the name of the role you want to add the user to");
+                         temp_role = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.addUserToAccessControl(temp_username, temp_role, uniqueUserToken)); // Delete user
+                        break;
+                    case 13:
+                        if (!username.equals("Alice")) {
+                            // this error message can give information to a hacker
+                            // System.out.println("You do not have permission to use this command");
+                            break;
+                        }
+                        System.out.println("Enter the username of the user you want to delete from the access control");
+                        temp_username = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.deleteUserFromAccessControl(temp_username, uniqueUserToken)); // Delete user
+                        break;
+                    case 14:
+                        if (!username.equals("Alice")) {
+                            // this error message can give information to a hacker
+                            // System.out.println("You do not have permission to use this command");
+                            break;
+                        }
+                        System.out.println("Enter the username of the user you want to change the role of ");
+                        temp_username = scanner.next() + scanner.nextLine();
+                        System.out.println("Enter the name of the role you want to change the users permissions to");
+                        temp_role = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.changeRolePermission(temp_username, temp_role, uniqueUserToken)); // Delete user
                         break;
                          
                     default:

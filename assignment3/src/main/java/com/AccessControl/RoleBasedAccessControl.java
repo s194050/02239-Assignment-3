@@ -48,6 +48,7 @@ class RoleBasedAccessControl extends AccessControl {
     @Override
     public boolean createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
+        try{
         JSONParser parser = new JSONParser();
         Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
         JSONObject users_roles = (JSONObject) users_roles_;
@@ -64,11 +65,61 @@ class RoleBasedAccessControl extends AccessControl {
         out.write(users_roles.toJSONString());
         out.flush();
         out.close();
+        status = true;
         return status;
+        }
+        catch(Exception e){
+            return status;
+        }
     }
 
     @Override
     public boolean deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
-        return false;
+        // delete the user from the users_roles.json file
+        boolean status = false;
+        JSONParser parser = new JSONParser(); // create a parser
+        Object users_roles_ = parser.parse(new FileReader("users_roles.json")); // parse the file
+        JSONObject users_roles = (JSONObject) users_roles_; // cast the parsed file to a JSONObject
+
+        JSONObject roles_with_names = (JSONObject) users_roles.get("roles"); // get the roles object
+        try {
+        for(int i = 0; i < roles_with_names.size(); i++) { // iterate through the roles
+
+            String role = roles_with_names.keySet().toArray()[i].toString(); // get the role name
+           
+            JSONArray users = (JSONArray) roles_with_names.get(role); // get the users for the role
+
+            for(int j = 0; j < users.size(); j++) { // iterate through the users
+                if(users.get(j).toString().equals(username)) { // if the user is found
+                    users.remove(j); // remove the user
+                    roles_with_names.put(role,users); // update the users for the role
+                    users_roles.put("roles", roles_with_names); // update the roles_with_names
+                    status = true;
+                    break;
+                }
+            }
+        }
+        FileWriter fstream = new FileWriter("users_roles.json", false);
+        BufferedWriter out = new BufferedWriter(fstream);
+        // Write to file
+        out.write(users_roles.toJSONString());
+        out.flush();
+        out.close();
+        return status;
+    }catch(Exception e){
+        return status;
+    }
+    }
+
+
+    @Override
+    public boolean changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
+        boolean status = false;
+        status = deleteUser(username);
+        if(status) {
+            status = createUser(username, newRole);
+        }
+
+        return status;
     }
 }

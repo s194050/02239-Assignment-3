@@ -30,4 +30,8 @@ public abstract class AccessControl {
     public boolean deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
         return false;
     }
+
+    public boolean changeUserRole(String username, String role) throws IOException, FileNotFoundException, ParseException {
+        return false;
+    }
 }

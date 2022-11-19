@@ -27,7 +27,6 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control
     
     public String print(String filename, String printer, UUID userToken) throws IOException, ParseException { // Print a file
-        accessControl.createUser("Boby", "power_user");
         if (SessionAuth.validateSession(userToken)) {
             if(!serverStatus){
                 return "Server is not running";
@@ -45,7 +44,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null; // Printer not found
             } else {
 //                System.out.println("You have no access to this operation");
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
 
         } else {
@@ -71,7 +70,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null; // Printer not found
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -97,7 +96,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null; // Printer not found
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -117,7 +116,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is starting";
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -136,7 +135,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 serverStatus = false;
                 return "Stopping the server";
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -164,7 +163,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server restarted";
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
 
         } else {
@@ -194,7 +193,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                         + "Please try again. ";
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -219,7 +218,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null;
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -248,7 +247,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Parameter " + parameter + " added with value " + value;
 
             } else {
-                return "You have no access to this operation";
+                return "You dont have access to this operation";
             }
         } else {
             return "Session Invalid";
@@ -404,5 +403,55 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
     }
 
+    public String addUserToAccessControl(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException {
+        if (SessionAuth.validateSession(userToken)) {
+            if(!serverStatus){
+                return "Server is stopped";
+            }
+
+            boolean Status = accessControl.createUser(username, role);
+            if (Status) {
+                return "User " + username + " added to access control with role " + role;
+            } else {
+                return "User " + username + " already exists in access control";
+            }
+        } else {
+            return "Session Invalid";
+        }
+    }
+
+    public String deleteUserFromAccessControl(String username, UUID userToken) throws FileNotFoundException, IOException, ParseException {
+        if (SessionAuth.validateSession(userToken)) {
+            if(!serverStatus){
+                return "Server is stopped";
+            }
+
+            boolean Status = accessControl.deleteUser(username);
+            if (Status) {
+                return "User " + username + " deleted from access control";
+            } else {
+                return "User " + username + " does not exist in access control";
+            }
+        } else {
+            return "Session Invalid";
+        }
+    }
+
+    public String changeRolePermission(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException {
+        if (SessionAuth.validateSession(userToken)) {
+            if(!serverStatus){
+                return "Server is stopped";
+            }
+
+            boolean Status = accessControl.changeUserRole(username, role);
+            if (Status) {
+                return "User " + username + " changed to role " + role;
+            } else {
+                return "User " + username + " does not exist in access control";
+            }
+        } else {
+            return "Session Invalid";
+        }
+    }
 
 }
