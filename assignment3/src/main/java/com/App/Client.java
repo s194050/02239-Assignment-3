@@ -82,7 +82,7 @@ public class Client
                 AccessControl accessControl = AccessControl.runACL("RBAC"); // Create an instance of the access control class
                 if (accessControl.isUserAdmin(username)) { // If the user is admin, allow them to create users
                     System.out.println("\nAccess Control Options:\n \t \t 12: Add a user to the access control\n \t\t" +
-                        " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control\n");
+                        " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control");
                 }
 
                 selection = Integer.parseInt(scanner.next() + scanner.nextLine()); // Get the user input

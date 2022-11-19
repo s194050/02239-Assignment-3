@@ -23,20 +23,21 @@ public abstract class AccessControl {
         return false;
     }
 
-    public boolean createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
-        return false;
+    public String createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
+        return "false";
     }
 
-    public boolean deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
-        return false;
+    public String deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
+        return "false";
     }
 
-    public boolean changeUserRole(String username, String role)
+    public String changeUserRole(String username, String role)
             throws IOException, FileNotFoundException, ParseException {
-        return false;
+        return "false";
     }
     
     public boolean isUserAdmin(String username) throws ParseException {
         return false;
     }
+
 }

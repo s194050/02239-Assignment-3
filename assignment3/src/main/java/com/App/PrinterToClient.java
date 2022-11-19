@@ -427,11 +427,15 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             
             // if user exists
-            boolean Status = accessControl.createUser(username, role);
-            if (Status) {
+            String Status = accessControl.createUser(username, role);
+            if (Status.equals("true")) {
                 return "User " + username + " added to access control with role " + role;
-            } else {
-                return "User " + username + " already exists in access control";
+            } else if(Status.equals("Role does not exist")){ 
+                return "Role: " + role + " does not exist";
+            }else if(Status.equals("User already in access control")){
+                return "User " + username + " already exists";
+            }else{
+                return "Unexpected Error";
             }
         } else {
             return "Session Invalid";
@@ -444,11 +448,13 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is stopped";
             }
 
-            boolean Status = accessControl.deleteUser(username);
-            if (Status) {
+            String Status = accessControl.deleteUser(username);
+            if (Status.equals("true")) {
                 return "User " + username + " deleted from access control";
-            } else {
+            } else if (Status.equals("false")) {
                 return "User " + username + " does not exist in access control";
+            } else{
+                return "Unexpected Error";
             }
         } else {
             return "Session Invalid";
@@ -461,11 +467,15 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server is stopped";
             }
 
-            boolean Status = accessControl.changeUserRole(username, role);
-            if (Status) {
+            String Status = accessControl.changeUserRole(username, role);
+            if (Status.equals("true")) {
                 return "User " + username + " changed to role " + role;
-            } else {
-                return "User " + username + " does not exist in access control";
+            } else if (Status.equals("Role does not exist")) {
+                return "Role: " + role + " does not exist";
+            }else if (Status.equals("false")) {
+                return "Role " + role + " does not exist in access control";
+            }else {
+                return "Unexpected error";
             }
         } else {
             return "Session Invalid";

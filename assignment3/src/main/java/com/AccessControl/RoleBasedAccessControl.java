@@ -104,16 +104,14 @@ class RoleBasedAccessControl extends AccessControl {
     }
     
     @Override
-    public boolean createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
+    public String createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
         
         if (!roleExists(role)) {
-            System.out.println("Role does not exist");
-            return status;
+            return "Role does not exist";
         }
         if (userAlreadyInAccessControl(username, role)) {
-            System.out.println("User already in access control");
-            return status;
+            return "User already in access control";
         }
 
         try{
@@ -137,15 +135,15 @@ class RoleBasedAccessControl extends AccessControl {
             out.flush();
             out.close();
             status = true;
-            return status;
+            return status ? "true" : "false";
         }
         catch(Exception e){
-            return status;
+            return status ? "true" : "false";
         }
     }
 
     @Override
-    public boolean deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
+    public String deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
         // delete the user from the users_roles.json file
         boolean status = false;
         JSONParser parser = new JSONParser(); // create a parser
@@ -174,29 +172,29 @@ class RoleBasedAccessControl extends AccessControl {
             out.write(users_roles.toJSONString());
             out.flush();
             out.close();
-            return status;
+            return status ? "true" : "false";
         }catch(Exception e){
-            return status;
+            return status ? "true" : "false";
         }
     }
 
     @Override
-    public boolean changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
-        boolean status = false;
+    public String changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
+        String status = "false";
+        
         if (!roleExists(newRole)) {
-            System.out.println("Role does not exist");
-            return status;
+            return "Role does not exist";
         }
         if (userAlreadyInAccessControl(username, newRole)) {
-            System.out.println("User already in has this role's permissions");
-            return status;
+            return "User already in access control";
         }
         
         status = deleteUser(username);
-        if(status) {
+        if(status.equals("true")) {
             status = createUser(username, newRole);
         }
 
         return status;
     }
+
 }
