@@ -1,8 +1,8 @@
-Alice:print;queue;topQueue;Start;Stop;Restart;status;readConfig;setConfig
-Bob:Start;Stop;Restart;status;readConfig;setConfig
-Cecilia:print;queue;topQueue;Restart
-David:print;queue
-Erica:print;queue
-Fred:print;queue
-George:print;queue
-
+Alice:print;queue;topQueue;Start;Stop;Restart;status;readConfig;setConfig;
+Cecilia:print;queue;topQueue;Restart;
+David:print;queue;
+Erica:print;queue;
+Fred:print;queue;
+George:print;queue;start;stop;restart;status;readConfig;setConfig;
+Henry:print;queue;
+Ida:print;queue;topQueue;restart;

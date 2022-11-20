@@ -173,7 +173,7 @@ public class Client
                             break;
                         }
 
-                        getAvailableJobs(client1, scanner, printer,uniqueUserToken); // Get available jobs
+                        getAvailableJobs(client1, scanner, printer, uniqueUserToken); // Get available jobs
                         System.out.println("Enter the job number you want to move to the top of the queue: ");
                         try {
                             job = Integer.parseInt(scanner.next() + scanner.nextLine());
@@ -293,7 +293,20 @@ public class Client
                         temp_role = scanner.next() + scanner.nextLine();
                         System.out.println(client1.changeRolePermission(temp_username, temp_role, uniqueUserToken)); // Delete user
                         break;
-                         
+
+                    case 15:
+                        System.out.println("Enter the username of the user you want to add to the access control");
+                        String temp_username_ACL = scanner.next() + scanner.nextLine();
+                        System.out.println("Enter the operations you want to add the user to (seperate using ; and dont add spaces)");
+                        String temp_operations_ACL = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.createUserInAccessList(temp_username_ACL, temp_operations_ACL, uniqueUserToken));
+                        break;
+
+                    case 16:
+                        System.out.println("Enter the username of the user you want to remove from to the access control");
+                        String temp_username_ACL_remove = scanner.next() + scanner.nextLine();
+                        System.out.println(client1.deleteUserInAccessList(temp_username_ACL_remove, uniqueUserToken));
+                        break;
                     default:
                         System.out.println("Invalid selection\n");
                         break;

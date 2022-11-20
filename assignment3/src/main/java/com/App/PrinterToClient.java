@@ -6,6 +6,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
+import com.AccessControl.AccessControlList;
 import org.json.simple.parser.ParseException;
 
 import com.Domain.Parameter;
@@ -19,6 +21,30 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     private UUID uniqueUserIdentifier; // Unique user identifier
     private boolean serverStatus = false; // Server status
 
+
+    public String createUserInAccessList(String username, String operations, UUID userToken) throws IOException, ParseException {
+
+//        String tempUsername = SessionAuth.getUsernameFromToken(userToken);
+//        System.out.println(tempUsername);
+        boolean status = AccessControlList.createUserACL(username, operations);
+        System.out.println(status);
+        if (status)
+        {
+            return "User: " + username + " created";
+        } else {
+            return "User was not created";
+        }
+    }
+
+    public String deleteUserInAccessList(String username, UUID userToken) throws IOException, ParseException {
+        boolean status = AccessControlList.deleteUserACL(username);
+        if (status)
+        {
+            return "User: " + username + " deleted";
+        } else {
+        return "User was not deleted";
+        }
+    }
 
     public PrinterToClient(String name) throws RemoteException {
         super(); // Call to UnicastRemoteObject constructor

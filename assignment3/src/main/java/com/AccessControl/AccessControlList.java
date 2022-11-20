@@ -1,7 +1,6 @@
 package com.AccessControl;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
 
 import org.json.simple.parser.ParseException;
 
@@ -35,5 +34,64 @@ public class AccessControlList extends AccessControl {
     public boolean isUserAdmin(String username) throws ParseException {
         return false;
     }
+
+    public static boolean createUserACL(String username, String operations) throws IOException {
+        boolean status = false;
+        String lines;
+        String fileIn = "accessControlLists.txt";
+        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileIn, true));
+
+        String operationsArray[] = operations.split(";");
+        System.out.println(Arrays.toString(operationsArray));
+
+        while ((lines = reader.readLine()) != null) {
+            String splitString[] = lines.split(":");
+            if (splitString[0].equals(username)) {
+                // user with such username exists
+                System.out.println("Such user already exists");
+//                status = false;
+                break;
+            }}
+            System.out.println("Such user doesnt exist");
+            writer.newLine();//it already appends at the end
+            writer.write(username + ":");
+            for (String operation:
+                    operationsArray) {
+                writer.write(operation + ";");
+            }
+            status = true;
+
+
+        reader.close();
+        writer.close();
+        return status;
+    }
+
+//    @Override
+    public static boolean deleteUserACL(String username) throws IOException {
+        boolean status;
+        String lines;
+        File inputFile = new File("accessControlLists.txt");
+        File tempFile = new File("myTempFile.txt");
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        while ((lines = reader.readLine()) != null) {
+            String splitString[] = lines.split(":");
+            if (splitString[0].equals(username)) {
+                continue;
+            } else {
+                System.out.println("User not found");
+            }
+            writer.write(lines + System.getProperty("line.separator"));
+        }
+        reader.close();
+        writer.close();
+        inputFile.delete();
+        status = tempFile.renameTo(inputFile);
+        return status;
+    }
+
 }
 
