@@ -3,6 +3,4 @@ Cecilia:print;queue;topQueue;Restart;
 David:print;queue;
 Erica:print;queue;
 Fred:print;queue;
-George:print;queue;start;stop;restart;status;readConfig;setConfig;
-Henry:print;queue;
-Ida:print;queue;topQueue;restart;
+George:print;queue;

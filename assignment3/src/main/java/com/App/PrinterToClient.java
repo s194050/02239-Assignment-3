@@ -6,8 +6,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-
-import com.AccessControl.AccessControlList;
 import org.json.simple.parser.ParseException;
 
 import com.Domain.Parameter;
@@ -20,36 +18,33 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     private List<Parameter> parameters = new ArrayList<>();
     private UUID uniqueUserIdentifier; // Unique user identifier
     private boolean serverStatus = false; // Server status
+    // private AccessControl accessControl; // Access control
 
+    // accessControl = AccessControl.runACL("RBAC");
 
-    public String createUserInAccessList(String username, String operations, UUID userToken) throws IOException, ParseException {
+    // public String createUserInAccessList(String username, String operations) throws IOException, ParseException {
+    //     String status = accessControl.createUser(username, operations);
+    //     if (status.equals("true")) {
+    //         return "User " + username + " created successfully";
+    //     } else {
+    //         return "User creation failed";
+    //     }
+    // }
 
-//        String tempUsername = SessionAuth.getUsernameFromToken(userToken);
-//        System.out.println(tempUsername);
-        boolean status = AccessControlList.createUserACL(username, operations);
-        System.out.println(status);
-        if (status)
-        {
-            return "User: " + username + " created";
-        } else {
-            return "User was not created";
-        }
-    }
-
-    public String deleteUserInAccessList(String username, UUID userToken) throws IOException, ParseException {
-        boolean status = AccessControlList.deleteUserACL(username);
-        if (status)
-        {
-            return "User: " + username + " deleted";
-        } else {
-        return "User was not deleted";
-        }
-    }
+    // public String deleteUserInAccessList(String username) throws IOException, ParseException {
+    //     String status = accessControl.deleteUser(username);
+    //     if (status.equals("true")) {
+    //         return "User " + username + " deleted successfully";
+    //     } else {
+    //         return "User deletion failed";
+    //     }
+    // }
 
     public PrinterToClient(String name) throws RemoteException {
         super(); // Call to UnicastRemoteObject constructor
     }
 
+    // TODO: THATS WORNGGGGG WE NEED TO PASS SOMEHOW THE INITIALIZED OBJECT FROM CLIENT
     AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control
     
     public String print(String filename, String printer, UUID userToken) throws IOException, ParseException { // Print a file
@@ -487,9 +482,10 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
         }
     }
 
-    public String changeRolePermission(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException {
+    public String changeRolePermission(String username, String role, UUID userToken)
+            throws FileNotFoundException, IOException, ParseException {
         if (SessionAuth.validateSession(userToken)) {
-            if(!serverStatus){
+            if (!serverStatus) {
                 return "Server is stopped";
             }
 
@@ -498,14 +494,57 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "User " + username + " changed to role " + role;
             } else if (Status.equals("Role does not exist")) {
                 return "Role: " + role + " does not exist";
-            }else if (Status.equals("false")) {
+            } else if (Status.equals("false")) {
                 return "Role " + role + " does not exist in access control";
-            }else {
+            } else if (Status.equals("Cannot change role when using ACLs")) {
+                return "Cannot change role when using ACLs";
+            } else {
                 return "Unexpected error";
             }
         } else {
             return "Session Invalid";
         }
     }
-
+    
+    public String addUserFunctionInACL(String username, String function, UUID userToken)
+            throws FileNotFoundException, IOException, ParseException {
+        if (SessionAuth.validateSession(userToken)) {
+            if (!serverStatus) {
+                return "Server is stopped";
+            }
+            String Status = accessControl.addUserFunction(username, function);
+            if (Status.equals("true")) {
+                return "Added this function to this user";
+            } else if (Status.equals("false")) {
+                return "Cannot add this function to the user";
+            } else if (Status.equals("Cannot add functions when using RBAC")) {
+                return "Cannot add functions when using RBAC";
+            } else {
+                return "Unexpected error";
+            }
+        } else {
+            return "Session Invalid";
+        }
+    }
+    
+    public String removeUserFunctionFromACL(String username, String function, UUID userToken)
+    throws FileNotFoundException, IOException, ParseException {
+        if (SessionAuth.validateSession(userToken)) {
+            if (!serverStatus) {
+                return "Server is stopped";
+            }
+            String Status = accessControl.removeUserFunction(username, function);
+            if (Status.equals("true")) {
+                return "Removed this function from the user";
+            } else if (Status.equals("false")) {
+                return "Cannot remove this function from the user";
+            } else if (Status.equals("Cannot remove functions when using RBAC")) {
+                return "Cannot remove functions when using RBAC";
+            } else {
+                return "Unexpected error";
+            }
+        } else {
+            return "Session Invalid";
+        }
+    }
 }

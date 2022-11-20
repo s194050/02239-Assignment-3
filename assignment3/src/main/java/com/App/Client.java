@@ -19,7 +19,7 @@ public class Client
         boolean loggedIn = false; // Keeps track of whether the user is logged in or not
         UUID uniqueUserToken = null; // Used to store the UUID of the user
         Scanner scanner = new Scanner(System.in);
-
+        AccessControl accessControl = AccessControl.runACL("RBAC");  // initialize the access control with RBAC by default
         // Commonly used variables
         int selection;
         int job = 0;
@@ -39,8 +39,26 @@ public class Client
 
         while (run) { // Run the main print functions of the server
             try {
-            while (!loggedIn) {// Handle the login process
-                System.out.println("Welcome to the print server \n 1: Login \n 2: Exit");
+                while (!loggedIn) {
+                    // handle access control
+
+                    System.out.println("Please select an option for: \n 1: Access Control List \n 2: Role Based Access Control");
+                    selection = Integer.parseInt(scanner.next() + scanner.nextLine());
+
+                    switch (selection) {
+                        case 1:
+                            accessControl = AccessControl.runACL("ACL");
+                            break;
+                        case 2:
+                            accessControl = AccessControl.runACL("RBAC");
+                            break;
+                        default:  
+                            System.out.println("Invalid selection");
+                            continue;
+                    }
+                    // Handle the login process
+                
+                    System.out.println("Welcome to the print server \n 1: Login \n 2: Exit");
                     selection = Integer.parseInt(scanner.next() + scanner.nextLine()); // Get the user input
 
                     switch(selection){ // Handle the selection
@@ -79,7 +97,7 @@ public class Client
                 if (username.equals("root")) { // If the user is root, allow them to create users
                     System.out.println("11: Create a user\n");
                 }
-                AccessControl accessControl = AccessControl.runACL("RBAC"); // Create an instance of the access control class
+                
                 if (accessControl.isUserAdmin(username)) { // If the user is admin, allow them to create users
                     System.out.println("\nAccess Control Options:\n \t \t 12: Add a user to the access control\n \t\t" +
                         " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control");
@@ -294,19 +312,22 @@ public class Client
                         System.out.println(client1.changeRolePermission(temp_username, temp_role, uniqueUserToken)); // Delete user
                         break;
 
-                    case 15:
-                        System.out.println("Enter the username of the user you want to add to the access control");
-                        String temp_username_ACL = scanner.next() + scanner.nextLine();
-                        System.out.println("Enter the operations you want to add the user to (seperate using ; and dont add spaces)");
-                        String temp_operations_ACL = scanner.next() + scanner.nextLine();
-                        System.out.println(client1.createUserInAccessList(temp_username_ACL, temp_operations_ACL, uniqueUserToken));
-                        break;
+                    // case 15:
+                    //     System.out.println("Enter the username of the user you want to add to the access control");
+                    //     String temp_username_ACL = scanner.next() + scanner.nextLine();
+                    //     System.out.println("Enter the operations you want to add the user to (seperate using ; and dont add spaces)");
+                    //     String temp_operations_ACL = scanner.next() + scanner.nextLine();
+                    //     System.out.println(client1.createUserInAccessList(temp_username_ACL, temp_operations_ACL, uniqueUserToken));
+                    //     break;
 
-                    case 16:
-                        System.out.println("Enter the username of the user you want to remove from to the access control");
-                        String temp_username_ACL_remove = scanner.next() + scanner.nextLine();
-                        System.out.println(client1.deleteUserInAccessList(temp_username_ACL_remove, uniqueUserToken));
-                        break;
+                    // case 16:
+                    //     System.out.println("Enter the username of the user you want to remove from to the access control");
+                    //     String temp_username_ACL_remove = scanner.next() + scanner.nextLine();
+                    //     System.out.println(client1.deleteUserInAccessList(temp_username_ACL_remove, uniqueUserToken));
+                    //     break;
+                    // TODO: Still needs some work here
+                    // TODO: The adding of users in ACL is different than in RBAC
+                    // TODO: THINK ABOUT HOW TO IMPLEMENT THIS 
                     default:
                         System.out.println("Invalid selection\n");
                         break;

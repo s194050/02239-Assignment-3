@@ -36,8 +36,18 @@ public abstract class AccessControl {
         return "false";
     }
     
-    public boolean isUserAdmin(String username) throws ParseException {
+    public boolean isUserAdmin(String username) throws ParseException, IOException {
         return false;
+    }
+
+    public String addUserFunction(String username, String function)
+            throws IOException, FileNotFoundException, ParseException {
+        return "false";
+    }
+
+    public String removeUserFunction(String username, String function)
+            throws IOException, FileNotFoundException, ParseException {
+        return "false";
     }
 
 }

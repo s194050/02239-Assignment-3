@@ -26,13 +26,11 @@ public interface ClientToPrinter extends Remote{ // Client to Printer interface
     public String login(String username, String password) throws RemoteException;
     public UUID getUniqueUserIdentifier() throws RemoteException;
     public String logout(UUID userToken) throws RemoteException;
+    public String changeRolePermission(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException;
     public String addUserToAccessControl(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException;
     public String deleteUserFromAccessControl(String username, UUID userToken) throws FileNotFoundException, IOException, ParseException;
-    public String changeRolePermission(String username, String role, UUID userToken) throws FileNotFoundException, IOException, ParseException;
-
-    public String createUserInAccessList(String temp_username_acl, String temp_operations_acl, UUID uniqueUserToken) throws IOException, ParseException ;
-
-    public String deleteUserInAccessList(String username, UUID userToken) throws IOException, ParseException;
+    public String addUserFunctionInACL(String username, String function, UUID userToken) throws FileNotFoundException, IOException, ParseException;
+    public String removeUserFunctionFromACL(String username, String function, UUID userToken) throws FileNotFoundException, IOException, ParseException;
 }
 
 

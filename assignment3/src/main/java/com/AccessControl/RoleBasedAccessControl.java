@@ -47,7 +47,7 @@ class RoleBasedAccessControl extends AccessControl {
     }
 
     @Override
-    public boolean isUserAdmin(String username) throws ParseException {
+    public boolean isUserAdmin(String username) throws IOException, ParseException {
         boolean isAdmin = false;
         try {
             JSONParser parser = new JSONParser();
@@ -179,22 +179,35 @@ class RoleBasedAccessControl extends AccessControl {
     }
 
     @Override
-    public String changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
+    public String changeUserRole(String username, String newRole)
+            throws IOException, FileNotFoundException, ParseException {
         String status = "false";
-        
+
         if (!roleExists(newRole)) {
             return "Role does not exist";
         }
         if (userAlreadyInAccessControl(username, newRole)) {
             return "User already in access control";
         }
-        
+
         status = deleteUser(username);
-        if(status.equals("true")) {
+        if (status.equals("true")) {
             status = createUser(username, newRole);
         }
 
         return status;
+    }
+    
+    @Override
+    public String addUserFunction(String username, String function)
+            throws IOException, FileNotFoundException, ParseException {
+        return "Cannot add functions when using RBAC";
+    }
+
+    @Override
+    public String removeUserFunction(String username, String function)
+            throws IOException, FileNotFoundException, ParseException {
+        return "Cannot remove functions when using RBAC";
     }
 
 }
