@@ -19,6 +19,8 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     private UUID uniqueUserIdentifier; // Unique user identifier
     private boolean serverStatus = false; // Server status
     // private AccessControl accessControl; // Access control
+    AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control and initiate to RBAC
+    String policy = "RBAC"; // Set the policy to RBAC
 
     // accessControl = AccessControl.runACL("RBAC");
 
@@ -45,7 +47,6 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     }
 
     // TODO: THATS WORNGGGGG WE NEED TO PASS SOMEHOW THE INITIALIZED OBJECT FROM CLIENT
-    AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control
     
     public String print(String filename, String printer, UUID userToken) throws IOException, ParseException { // Print a file
         if (SessionAuth.validateSession(userToken)) {
@@ -546,5 +547,27 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
         } else {
             return "Session Invalid";
         }
+    }
+
+    public String setACLPolicy(String policyname){ // Set the access control policy to either RBAC or ACL
+        if(policyname.equals("RBAC")){
+            accessControl = AccessControl.runACL(policyname); // Set the policy to RBAC
+            policy = "RBAC";
+            return "Set policy to RBAC";
+        }else if(policyname.equals("ACL")){
+            accessControl = AccessControl.runACL(policyname); // Set the policy to ACL
+            policy = "ACL";
+            return "Set policy to ACL";
+        }else{
+            return "Policy does not exist";
+        }
+    }
+
+    public String getAccessControl() { // Get the current access control policy
+        return policy;
+    }
+
+    public boolean isTheUserAdmin(String username) throws ParseException, IOException{ // Check if the user is an admin
+        return accessControl.isUserAdmin(username);
     }
 }

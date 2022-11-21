@@ -19,7 +19,7 @@ public class Client
         boolean loggedIn = false; // Keeps track of whether the user is logged in or not
         UUID uniqueUserToken = null; // Used to store the UUID of the user
         Scanner scanner = new Scanner(System.in);
-        AccessControl accessControl = AccessControl.runACL("RBAC");  // initialize the access control with RBAC by default
+        String accessControl = ""; // Used to store the name of the access control policy
         // Commonly used variables
         int selection;
         int job = 0;
@@ -47,10 +47,10 @@ public class Client
 
                     switch (selection) {
                         case 1:
-                            accessControl = AccessControl.runACL("ACL");
+                            System.out.println(client1.setACLPolicy("ACL"));
                             break;
                         case 2:
-                            accessControl = AccessControl.runACL("RBAC");
+                            System.out.println(client1.setACLPolicy("RBAC"));
                             break;
                         default:  
                             System.out.println("Invalid selection");
@@ -87,7 +87,8 @@ public class Client
                 if (run == false) { // If the user has exited the program, break the loop
                     break;
                 }
-                
+                accessControl = client1.getAccessControl(); // Get the access control policy
+
                 System.out.print("Server Options: \n \t\t 1: Start Server \t\t\t 2: Stop Server \t\t\t 3: Restart Server \n" +
                         "Printer Functions: \n \t\t 4: Print file \n \t\t 5: Print the job queue of a specific printer \n" +
                         "\t\t 6: Move a job on a specfic printer to the top of the queue\n" +
@@ -98,7 +99,7 @@ public class Client
                     System.out.println("11: Create a user\n");
                 }
                 
-                if (accessControl.isUserAdmin(username)) { // If the user is admin, allow them to create users
+                if (client1.isTheUserAdmin(username)) { // If the user is admin, allow them to create users
                     System.out.println("\nAccess Control Options:\n \t \t 12: Add a user to the access control\n \t\t" +
                         " 13: Remove a user from the access control\n \t \t 14: Change a user's role in the access control");
                 }
@@ -281,53 +282,87 @@ public class Client
                         System.out.println(client1.createUser(temp_username, temp_password, uniqueUserToken)); // Create user
                         break;
                     case 12:
-                        if (!accessControl.isUserAdmin(username)) {
+                        accessControl = client1.getAccessControl(); // Update the chosen access control
+                        if (!client1.isTheUserAdmin(username)) { // Check if the user is an admin
                             System.out.println("Invalid selection\n");
                             break;
                         }
-                        System.out.println("Enter the username of the user you want to add to the access control");
-                        temp_username = scanner.next() + scanner.nextLine();
-                        System.out.println("Enter the name of the role you want to add the user to");
-                         temp_role = scanner.next() + scanner.nextLine();
-                        System.out.println(client1.addUserToAccessControl(temp_username, temp_role, uniqueUserToken)); // Delete user
-                        break;
+                        if(accessControl.equals("RBAC")){ // If the access control is RBAC
+                            System.out.println("Enter the username of the user you want to add to the access control");
+                            temp_username = scanner.next() + scanner.nextLine();
+                            System.out.println("Enter the name of the role you want to add the user to");
+                            temp_role = scanner.next() + scanner.nextLine();
+                            System.out.println(client1.addUserToAccessControl(temp_username, temp_role, uniqueUserToken)); // Add user to access control
+                            break;
+                        }else if(accessControl.equals("ACL")){ // If the access control is ACL
+                            System.out.println("Enter the username of the user you want to add to the access control");
+                            temp_username = scanner.next() + scanner.nextLine();
+                            System.out.println("Enter the operations you want to add the user to (seperate using ; and dont add spaces)");
+                            String temp_operations = scanner.next() + scanner.nextLine();
+                            System.out.println(client1.addUserToAccessControl(temp_username, temp_operations, uniqueUserToken)); // Add user to access control
+                            break;
+                        }else{
+                            System.out.println("Unexpected Error\n");
+                            break;
+                        }
                     case 13:
-                        if (!accessControl.isUserAdmin(username)) {
+                        accessControl = client1.getAccessControl(); // Update the chosen access control
+                        if (!client1.isTheUserAdmin(username)) { // Check if the user is an admin
                             System.out.println("Invalid selection\n");
                             break;
                         }
-                        System.out.println("Enter the username of the user you want to delete from the access control");
-                        temp_username = scanner.next() + scanner.nextLine();
-                        System.out.println(client1.deleteUserFromAccessControl(temp_username, uniqueUserToken)); // Delete user
-                        break;
+                        if(accessControl.equals("RBAC")){ //If the access control is RBAC
+                            System.out.println("Enter the username of the user you want to delete from the access control");
+                            temp_username = scanner.next() + scanner.nextLine();
+                            System.out.println(client1.deleteUserFromAccessControl(temp_username, uniqueUserToken)); // Delete user
+                            break;
+                        }else if(accessControl.equals("ACL")){ // If the access control is ACL
+                            System.out.println("Enter the username of the user you want to remove from to the access control");
+                            temp_username = scanner.next() + scanner.nextLine();
+                            System.out.println(client1.deleteUserFromAccessControl(temp_username, uniqueUserToken)); // Delete user
+                             break;
+                        }else {
+                            System.out.println("Unexpected Error\n");
+                            break;
+                        }
                     case 14:
-                        if (!accessControl.isUserAdmin(username)) {
+                        accessControl = client1.getAccessControl(); // Update the chosen access control
+                        if (!client1.isTheUserAdmin(username)) { // Check if the user is an admin
                             System.out.println("Invalid selection\n");
                             break;
                         }
-                        System.out.println("Enter the username of the user you want to change the role of ");
-                        temp_username = scanner.next() + scanner.nextLine();
-                        System.out.println("Enter the name of the role you want to change the users permissions to");
-                        temp_role = scanner.next() + scanner.nextLine();
-                        System.out.println(client1.changeRolePermission(temp_username, temp_role, uniqueUserToken)); // Delete user
-                        break;
-
-                    // case 15:
-                    //     System.out.println("Enter the username of the user you want to add to the access control");
-                    //     String temp_username_ACL = scanner.next() + scanner.nextLine();
-                    //     System.out.println("Enter the operations you want to add the user to (seperate using ; and dont add spaces)");
-                    //     String temp_operations_ACL = scanner.next() + scanner.nextLine();
-                    //     System.out.println(client1.createUserInAccessList(temp_username_ACL, temp_operations_ACL, uniqueUserToken));
-                    //     break;
-
-                    // case 16:
-                    //     System.out.println("Enter the username of the user you want to remove from to the access control");
-                    //     String temp_username_ACL_remove = scanner.next() + scanner.nextLine();
-                    //     System.out.println(client1.deleteUserInAccessList(temp_username_ACL_remove, uniqueUserToken));
-                    //     break;
-                    // TODO: Still needs some work here
-                    // TODO: The adding of users in ACL is different than in RBAC
-                    // TODO: THINK ABOUT HOW TO IMPLEMENT THIS 
+                        if(accessControl.equals("RBAC")){ // If the access control is RBAC
+                            System.out.println("Enter the username of the user you want to change the role of ");
+                            temp_username = scanner.next() + scanner.nextLine();
+                            System.out.println("Enter the name of the role you want to change the users permissions to");
+                            temp_role = scanner.next() + scanner.nextLine();
+                            System.out.println(client1.changeRolePermission(temp_username, temp_role, uniqueUserToken)); // Delete user
+                            break;
+                        }else if(accessControl.equals("ACL")){ // If the access control is ACL
+                            System.out.println("Do you want to remove or add a function to the user? (remove/add)");
+                            String choice = scanner.next() + scanner.nextLine();
+                            if(choice.equals("remove")){ // If the user wants to remove a function
+                                System.out.println("Enter the username of the user you want to remove a function from");
+                                temp_username = scanner.next() + scanner.nextLine();
+                                System.out.println("Enter the function you want to remove from the user");
+                                String temp_function = scanner.next() + scanner.nextLine();
+                                System.out.println(client1.addUserFunctionInACL(temp_username, temp_function, uniqueUserToken));
+                                break;
+                            }else if(choice.equals("add")){ // If the user wants to add a function
+                                System.out.println("Enter the username of the user you want to add a function to");
+                                temp_username = scanner.next() + scanner.nextLine();
+                                System.out.println("Enter the function you want to add to the user");
+                                String temp_function = scanner.next() + scanner.nextLine();
+                                System.out.println(client1.removeUserFunctionFromACL(temp_username, temp_function, uniqueUserToken));
+                                break;
+                            }else{
+                                System.out.println("Invalid selection\n");
+                                break;
+                            }
+                        }else{
+                            System.out.println("Unexpected Error\n");
+                            break;
+                        }
                     default:
                         System.out.println("Invalid selection\n");
                         break;

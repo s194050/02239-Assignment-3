@@ -31,6 +31,9 @@ public interface ClientToPrinter extends Remote{ // Client to Printer interface
     public String deleteUserFromAccessControl(String username, UUID userToken) throws FileNotFoundException, IOException, ParseException;
     public String addUserFunctionInACL(String username, String function, UUID userToken) throws FileNotFoundException, IOException, ParseException;
     public String removeUserFunctionFromACL(String username, String function, UUID userToken) throws FileNotFoundException, IOException, ParseException;
+    public String setACLPolicy(String policy) throws RemoteException;
+    public String getAccessControl() throws RemoteException;
+    public boolean isTheUserAdmin(String username) throws ParseException, IOException;
 }
 
 

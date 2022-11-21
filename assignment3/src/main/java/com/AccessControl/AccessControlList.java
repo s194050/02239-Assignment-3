@@ -137,7 +137,7 @@ public class AccessControlList extends AccessControl {
                 break;
             }}
             System.out.println("Such user doesnt exist");
-            writer.newLine();//it already appends at the end
+            //writer.newLine();//it already appends at the end
             writer.write(username + ":");
             for (String operation:
                     operationsArray) {
@@ -190,8 +190,7 @@ public class AccessControlList extends AccessControl {
     public String addUserFunction(String username, String function)
             throws IOException, FileNotFoundException, ParseException {
         
-        if (!userAlreadyInAccessControl(username)) {
-            System.out.println("Such user doesnt exist");
+        if (!userAlreadyInAccessControl(username)) { // if user already exists
             return "false";
         }
         // if user already has such function
