@@ -346,14 +346,14 @@ public class Client
                                 temp_username = scanner.next() + scanner.nextLine();
                                 System.out.println("Enter the function you want to remove from the user");
                                 String temp_function = scanner.next() + scanner.nextLine();
-                                System.out.println(client1.addUserFunctionInACL(temp_username, temp_function, uniqueUserToken));
+                                System.out.println(client1.removeUserFunctionFromACL(temp_username, temp_function, uniqueUserToken));
                                 break;
                             }else if(choice.equals("add")){ // If the user wants to add a function
                                 System.out.println("Enter the username of the user you want to add a function to");
                                 temp_username = scanner.next() + scanner.nextLine();
                                 System.out.println("Enter the function you want to add to the user");
                                 String temp_function = scanner.next() + scanner.nextLine();
-                                System.out.println(client1.removeUserFunctionFromACL(temp_username, temp_function, uniqueUserToken));
+                                System.out.println(client1.addUserFunctionInACL(temp_username, temp_function, uniqueUserToken));
                                 break;
                             }else{
                                 System.out.println("Invalid selection\n");
