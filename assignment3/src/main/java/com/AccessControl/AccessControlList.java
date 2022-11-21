@@ -136,8 +136,8 @@ public class AccessControlList extends AccessControl {
 //                status = false;
                 break;
             }}
-            System.out.println("Such user doesnt exist");
-            //writer.newLine();//it already appends at the end
+            //System.out.println("Such user doesnt exist");
+            writer.newLine();//it already appends at the end
             writer.write(username + ":");
             for (String operation:
                     operationsArray) {
@@ -153,7 +153,7 @@ public class AccessControlList extends AccessControl {
 
     @Override
     public String deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
-        if (!userAlreadyInAccessControl(username)) {
+        if (userAlreadyInAccessControl(username)) {
             return "true";
         }
 
