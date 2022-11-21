@@ -6,6 +6,27 @@ import org.json.simple.parser.ParseException;
 
 public class AccessControlList extends AccessControl {
 
+    // Maybe better if there was a file with all allowed operations instead of hardcoded here, and then read from that file
+    private String validateOperations(String operations) {
+        String[] operationsArray = operations.split(";");
+        for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
+            if (operationsArray[operationsIndexArray].equals("print")
+                    || operationsArray[operationsIndexArray].equals("queue")
+                    || operationsArray[operationsIndexArray].equals("topQueue")
+                    || operationsArray[operationsIndexArray].equals("Start")
+                    || operationsArray[operationsIndexArray].equals("Stop")
+                    || operationsArray[operationsIndexArray].equals("Restart")
+                    || operationsArray[operationsIndexArray].equals("status")
+                    || operationsArray[operationsIndexArray].equals("readConfig")
+                    || operationsArray[operationsIndexArray].equals("setConfig")) {
+                continue;
+            } else {
+                return "Invalid operation";
+            }
+        }
+        return "true";
+    }
+
     private String[] getUserFunctions (String username) throws IOException, FileNotFoundException, ParseException {
         String lines;
         String fileIn = "accessControlLists.txt";
@@ -59,9 +80,6 @@ public class AccessControlList extends AccessControl {
             String splitString[] = lines.split(":");
             if (splitString[0].equals(username)) {
                 status = true;
-                break;
-            } else {
-                status = false;
                 break;
             }
         }
@@ -119,65 +137,50 @@ public class AccessControlList extends AccessControl {
 
     @Override
     public String createUser(String username, String operations) throws IOException, FileNotFoundException, ParseException {
-        boolean status = false;
-        String lines;
-        String fileIn = "accessControlLists.txt";
-        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileIn, true));
-
-        String operationsArray[] = operations.split(";");
-        System.out.println(Arrays.toString(operationsArray));
-
-        while ((lines = reader.readLine()) != null) {
-            String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                // user with such username exists
-                System.out.println("Such user already exists");
-//                status = false;
-                break;
-            }}
-            //System.out.println("Such user doesnt exist");
-            writer.newLine();//it already appends at the end
-            writer.write(username + ":");
-            for (String operation:
-                    operationsArray) {
-                writer.write(operation + ";");
+        if (userAlreadyInAccessControl(username)) {
+            return "User already in access control";
+        } else {
+            String fileIn = "accessControlLists.txt";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileIn, true));
+            // validate operations before writing in file
+            if (validateOperations(operations).equals("true")) {
+                writer.write(username + ":" + operations + ";");
+                writer.newLine();
+                writer.close();
+                return "true";
+            } else {
+                writer.close();
+                return "Invalid operations";
             }
-            status = true;
-
-
-        reader.close();
-        writer.close();
-        return status ? "true" : "false";
+        }
     }
 
     @Override
     public String deleteUser(String username) throws IOException, FileNotFoundException, ParseException {
-        if (userAlreadyInAccessControl(username)) {
+        // If user doesn't exist in the acl file - then nothing to do
+        if (!userAlreadyInAccessControl(username)) {
+            return "false";
+        } else {
+            String lines;
+            String fileIn = "accessControlLists.txt";
+            String fileOut = "accessControlListsTemp.txt";
+            BufferedReader reader = new BufferedReader(new FileReader(fileIn));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
+            while ((lines = reader.readLine()) != null) {
+                String splitString[] = lines.split(":");
+                if (!splitString[0].equals(username)) {
+                    writer.write(lines);
+                    writer.newLine();
+                }
+            }
+            reader.close();
+            writer.close();
+            File oldFile = new File(fileIn);
+            oldFile.delete();
+            File newFile = new File(fileOut);
+            newFile.renameTo(oldFile);
             return "true";
         }
-
-        boolean status;
-        String lines;
-        File inputFile = new File("accessControlLists.txt");
-        File tempFile = new File("myTempFile.txt");
-
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-        while ((lines = reader.readLine()) != null) {
-            String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                continue;
-            }
-
-            writer.write(lines + System.getProperty("line.separator"));
-        }
-        reader.close();
-        writer.close();
-        inputFile.delete();
-        status = tempFile.renameTo(inputFile);
-        return status ? "true" : "false";
     }
 
     @Override

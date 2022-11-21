@@ -18,35 +18,15 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
     private List<Parameter> parameters = new ArrayList<>();
     private UUID uniqueUserIdentifier; // Unique user identifier
     private boolean serverStatus = false; // Server status
-    // private AccessControl accessControl; // Access control
+
     AccessControl accessControl = AccessControl.runACL("RBAC"); // Run the access control and initiate to RBAC
     String policy = "RBAC"; // Set the policy to RBAC
 
-    // accessControl = AccessControl.runACL("RBAC");
-
-    // public String createUserInAccessList(String username, String operations) throws IOException, ParseException {
-    //     String status = accessControl.createUser(username, operations);
-    //     if (status.equals("true")) {
-    //         return "User " + username + " created successfully";
-    //     } else {
-    //         return "User creation failed";
-    //     }
-    // }
-
-    // public String deleteUserInAccessList(String username) throws IOException, ParseException {
-    //     String status = accessControl.deleteUser(username);
-    //     if (status.equals("true")) {
-    //         return "User " + username + " deleted successfully";
-    //     } else {
-    //         return "User deletion failed";
-    //     }
-    // }
+    // This will change from the Client if the user decides
 
     public PrinterToClient(String name) throws RemoteException {
         super(); // Call to UnicastRemoteObject constructor
     }
-
-    // TODO: THATS WORNGGGGG WE NEED TO PASS SOMEHOW THE INITIALIZED OBJECT FROM CLIENT
     
     public String print(String filename, String printer, UUID userToken) throws IOException, ParseException { // Print a file
         if (SessionAuth.validateSession(userToken)) {
@@ -454,9 +434,13 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "User " + username + " added to access control with role " + role;
             } else if(Status.equals("Role does not exist")){ 
                 return "Role: " + role + " does not exist";
-            }else if(Status.equals("User already in access control")){
+            } else if (Status.equals("User already in access control")) {
                 return "User " + username + " already exists";
-            }else{
+            } else if(Status.equals("false")){
+                return "User " + username + " could not be added to access control";
+            } else if(Status.equals("Invalid operations")){
+                return "Invalid operations given";
+            } else{
                 return "Unexpected Error";
             }
         } else {

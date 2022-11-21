@@ -6,8 +6,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.UUID;
-import com.AccessControl.AccessControl;
-
 import org.json.simple.parser.ParseException;
 
 public class Client
@@ -17,6 +15,7 @@ public class Client
         ClientToPrinter client1 = (ClientToPrinter) Naming.lookup("rmi://localhost:1099/ClientToPrinter"); // Connect to server
         boolean run = true; // Used to keep the GUI running
         boolean loggedIn = false; // Keeps track of whether the user is logged in or not
+        boolean ACLPolicySelected = false; // Keeps track of whether the user has selected an ACL policy or not
         UUID uniqueUserToken = null; // Used to store the UUID of the user
         Scanner scanner = new Scanner(System.in);
         String accessControl = ""; // Used to store the name of the access control policy
@@ -39,23 +38,27 @@ public class Client
 
         while (run) { // Run the main print functions of the server
             try {
-                while (!loggedIn) {
-                    // handle access control
 
+                while (!ACLPolicySelected) {
+                    // handle access control policy selection
                     System.out.println("Please select an option for: \n 1: Access Control List \n 2: Role Based Access Control");
                     selection = Integer.parseInt(scanner.next() + scanner.nextLine());
-
                     switch (selection) {
                         case 1:
                             System.out.println(client1.setACLPolicy("ACL"));
+                            ACLPolicySelected = true;
                             break;
                         case 2:
                             System.out.println(client1.setACLPolicy("RBAC"));
+                            ACLPolicySelected = true;
                             break;
-                        default:  
+                        default:
                             System.out.println("Invalid selection");
-                            continue;
+                            break;
                     }
+                }
+
+                while (!loggedIn) {
                     // Handle the login process
                 
                     System.out.println("Welcome to the print server \n 1: Login \n 2: Exit");
