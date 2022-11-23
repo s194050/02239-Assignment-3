@@ -512,6 +512,8 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Cannot add this function to the user";
             } else if (Status.equals("Cannot add functions when using RBAC")) {
                 return "Cannot add functions when using RBAC";
+            } else if (Status.equals("Already has permission")) {
+                return username + " already has permission for this function";
             } else {
                 return "Unexpected error";
             }
@@ -533,6 +535,8 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Cannot remove this function from the user";
             } else if (Status.equals("Cannot remove functions when using RBAC")) {
                 return "Cannot remove functions when using RBAC";
+            } else if(Status.equals("Does not have permission")){
+                return username + " does not have permission for this function";
             } else {
                 return "Unexpected error";
             }
