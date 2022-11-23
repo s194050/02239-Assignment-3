@@ -6,81 +6,59 @@ import org.json.simple.parser.ParseException;
 
 public class AccessControlList extends AccessControl {
 
-    // Maybe better if there was a file with all allowed operations instead of hardcoded here, and then read from that file
-    private String validateOperations(String operations) {
-        String[] operationsArray = operations.split(";");
-        for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
-            if (operationsArray[operationsIndexArray].equals("print")
-                    || operationsArray[operationsIndexArray].equals("queue")
-                    || operationsArray[operationsIndexArray].equals("topQueue")
-                    || operationsArray[operationsIndexArray].equals("Start")
-                    || operationsArray[operationsIndexArray].equals("Stop")
-                    || operationsArray[operationsIndexArray].equals("Restart")
-                    || operationsArray[operationsIndexArray].equals("status")
-                    || operationsArray[operationsIndexArray].equals("readConfig")
-                    || operationsArray[operationsIndexArray].equals("setConfig")) {
+    // Maybe better if there was a file with all allowed functions instead of hardcoded here, and then read from that file
+    private String validateFunctions(String functions) {
+        String[] functionsArray = functions.split(";");
+        for (int functionsIndexArray = 0; functionsIndexArray < functionsArray.length; functionsIndexArray++) {
+            if (functionsArray[functionsIndexArray].equals("print")
+                    || functionsArray[functionsIndexArray].equals("queue")
+                    || functionsArray[functionsIndexArray].equals("topQueue")
+                    || functionsArray[functionsIndexArray].equals("Start")
+                    || functionsArray[functionsIndexArray].equals("Stop")
+                    || functionsArray[functionsIndexArray].equals("Restart")
+                    || functionsArray[functionsIndexArray].equals("status")
+                    || functionsArray[functionsIndexArray].equals("readConfig")
+                    || functionsArray[functionsIndexArray].equals("setConfig")) {
                 continue;
             } else {
-                return "Invalid operation";
+                return "Invalid function";
             }
         }
         return "true";
     }
 
-    private String[] getUserFunctions (String username) throws IOException, FileNotFoundException, ParseException {
+    private String[] getFunctionUsers (String function) throws IOException, FileNotFoundException, ParseException {
         String lines;
         String fileIn = "accessControlLists.txt";
         BufferedReader reader = new BufferedReader(new FileReader(fileIn));
         while ((lines = reader.readLine()) != null) {
             String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                String operationsLine = splitString[1];
-                String operationsArray[] = operationsLine.split(";");
+            if (splitString[0].equals(function)) {
+                String usersLine = splitString[1];
+                String usersArray[] = usersLine.split(";");
                 reader.close();
-                return operationsArray;
+                return usersArray;
             }
         }
         reader.close();
         return null;
     }
-
-    // means that the specific user has access to the specific function
-    private boolean functionExists(String username, String function) throws IOException, FileNotFoundException, ParseException {
-        boolean status = false;
-        String lines;
-        String fileIn = "accessControlLists.txt";
-        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
-        while ((lines = reader.readLine()) != null) {
-            String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                String operationsLine = splitString[1];
-                String operationsArray[] = operationsLine.split(";");
-                for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
-                    if (operationsArray[operationsIndexArray].equals(function)) {
-                        System.out.println("Such function already exists");
-                        status = true;
-                        reader.close();
-                        return status;
-                    }
-                }
-            }
-        }
-        reader.close();
-        return status;
-    }
     
     // means that specific user already exists in the acl file
-    private boolean userAlreadyInAccessControl(String username)
-            throws IOException, FileNotFoundException, ParseException {
+    private boolean userAlreadyInAccessControl(String username) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
         String lines;
         String fileIn = "accessControlLists.txt";
         BufferedReader reader =  new BufferedReader(new FileReader(fileIn));
         while ((lines = reader.readLine()) != null) {
             String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                status = true;
-                break;
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+            for (int usersIndexArray = 0; usersIndexArray < usersArray.length; usersIndexArray++) {
+                if (usersArray[usersIndexArray].equals(username)) {
+                    status = true;
+                    break;
+                }
             }
         }
         reader.close();
@@ -89,70 +67,90 @@ public class AccessControlList extends AccessControl {
     
     @Override
     public boolean isUserAdmin(String username) throws IOException, ParseException {
-        boolean status = false;
         String lines;
         String fileIn = "accessControlLists.txt";
+        int adminFunctionsCount = 9; // 9 functions in total, admin only if all 9 functions are allowed
         BufferedReader reader =  new BufferedReader(new FileReader(fileIn));
         while ((lines = reader.readLine()) != null) {
             String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                String operationsLine = splitString[1];
-                if (operationsLine.equals("print;queue;topQueue;Start;Stop;Restart;status;readConfig;setConfig;")) {
-                    status = true;
-                    break;
-                } else {
-                    status = false;
-                    break;
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+            for (int usersIndexArray = 0; usersIndexArray < usersArray.length; usersIndexArray++) {
+                if (usersArray[usersIndexArray].equals(username)) {
+                    adminFunctionsCount--;
                 }
             }
         }
         reader.close();
-        return status;
+        return adminFunctionsCount == 0; //is admin if all 9 functions are allowed
     }
 
     @Override
     public boolean validateUserPermissions(String username, String function) throws IOException, ParseException {
-        boolean status = false;
-        String lines;
-        String fileIn = "accessControlLists.txt";
-        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
-        while ((lines = reader.readLine()) != null) {
-            String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                String operationsLine = splitString[1];
-                String operationsArray[] = operationsLine.split(";");
-                for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
-                    if (operationsArray[operationsIndexArray].equals(function)) {
-                        status = true;
-                        break;
-                    } else {
-                        status = false;
-                    }
-                }
+        if (validateFunctions(function).equals("Invalid function")) {
+            return false;
+        }
+        String[] usersArray = getFunctionUsers(function);
+        if (usersArray == null) {
+            return false;
+        }
+        for (int usersIndexArray = 0; usersIndexArray < usersArray.length; usersIndexArray++) {
+            if (usersArray[usersIndexArray].equals(username)) {
+                return true;
             }
         }
-        reader.close();
-        return status;
+        return false;
     }
 
     @Override
-    public String createUser(String username, String operations) throws IOException, FileNotFoundException, ParseException {
+    public String createUser(String username, String functions) throws IOException, FileNotFoundException, ParseException {
         if (userAlreadyInAccessControl(username)) {
             return "User already in access control";
-        } else {
-            String fileIn = "accessControlLists.txt";
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileIn, true));
-            // validate operations before writing in file
-            if (validateOperations(operations).equals("true")) {
-                writer.write(username + ":" + operations + ";");
+        }
+        if (validateFunctions(functions).equals("Invalid function")) {
+            return "Invalid operations";
+        }
+
+        String lines;
+        String fileIn = "accessControlLists.txt";
+        String fileOut = "accessControlListsTemp.txt";
+        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
+
+        while ((lines = reader.readLine()) != null) {
+            String splitString[] = lines.split(":");
+            String function = splitString[0];
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+
+            // check if the user should have access to this specific function
+            String[] functionsArray = functions.split(";");
+            boolean flag = false;
+            for (int functionsIndexArray = 0; functionsIndexArray < functionsArray.length; functionsIndexArray++) {
+                if (function.equals(functionsArray[functionsIndexArray])) {
+                    flag = true;
+                    break;
+                }
+            }
+            // if the function is in the functions string, add the user to the function
+            if (flag) {
+                usersArray = Arrays.copyOf(usersArray, usersArray.length + 1);
+                usersArray[usersArray.length - 1] = username;
+                String newUsersLine = String.join(";", usersArray);
+                writer.write(function + ":" + newUsersLine + ";");
                 writer.newLine();
-                writer.close();
-                return "true";
             } else {
-                writer.close();
-                return "Invalid operations";
+                writer.write(function + ":" + usersLine);
+                writer.newLine();
             }
         }
+        writer.close();
+        reader.close();
+        File oldFile = new File(fileIn);
+        oldFile.delete();
+        File newFile = new File(fileOut);
+        newFile.renameTo(oldFile);
+        return "true";
     }
 
     @Override
@@ -160,119 +158,123 @@ public class AccessControlList extends AccessControl {
         // If user doesn't exist in the acl file - then nothing to do
         if (!userAlreadyInAccessControl(username)) {
             return "false";
-        } else {
-            String lines;
-            String fileIn = "accessControlLists.txt";
-            String fileOut = "accessControlListsTemp.txt";
-            BufferedReader reader = new BufferedReader(new FileReader(fileIn));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
-            while ((lines = reader.readLine()) != null) {
-                String splitString[] = lines.split(":");
-                if (!splitString[0].equals(username)) {
-                    writer.write(lines);
-                    writer.newLine();
+        }
+        String lines;
+        String fileIn = "accessControlLists.txt";
+        String fileOut = "accessControlListsTemp.txt";
+        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
+        while ((lines = reader.readLine()) != null) {
+            String splitString[] = lines.split(":");
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+            String newUsersLine = "";
+            for (int usersIndexArray = 0; usersIndexArray < usersArray.length; usersIndexArray++) {
+                if (!usersArray[usersIndexArray].equals(username)) {
+                    newUsersLine += usersArray[usersIndexArray] + ";";
                 }
             }
-            reader.close();
-            writer.close();
-            File oldFile = new File(fileIn);
-            oldFile.delete();
-            File newFile = new File(fileOut);
-            newFile.renameTo(oldFile);
-            return "true";
+            writer.write(splitString[0] + ":" + newUsersLine);
+            writer.newLine();
         }
+        reader.close();
+        writer.close();
+        File oldFile = new File(fileIn);
+        oldFile.delete();
+        File newFile = new File(fileOut);
+        newFile.renameTo(oldFile);
+        return "true";
     }
 
     @Override
-    public String changeUserRole(String username, String newRole)
-            throws IOException, FileNotFoundException, ParseException {
+    public String changeUserRole(String username, String newRole) throws IOException, FileNotFoundException, ParseException {
         return "Cannot change role when using ACLs";
     }
 
     @Override
-    public String addUserFunction(String username, String function)
-            throws IOException, FileNotFoundException, ParseException {
-        
-        if (!userAlreadyInAccessControl(username)) { // if user already exists
+    public String addUserFunction(String username, String function) throws IOException, FileNotFoundException, ParseException {
+        if (validateFunctions(function).equals("Invalid function")) {
+            return "Invalid operations";
+        }
+        if (!userAlreadyInAccessControl(username)) {
             return "false";
         }
-        // if user already has such function
-        if (functionExists(username, function)) {
-            System.out.println("Such function already exists");
-            return "true";
+        if (validateUserPermissions(username, function)) {
+            return "Already has permission";
         }
 
-        boolean status = false;
         String lines;
         String fileIn = "accessControlLists.txt";
+        String fileOut = "accessControlListsTemp.txt";
         BufferedReader reader = new BufferedReader(new FileReader(fileIn));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileIn, true));
-
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
         while ((lines = reader.readLine()) != null) {
             String splitString[] = lines.split(":");
-            if (splitString[0].equals(username)) {
-                String operationsLine = splitString[1];
-                String operationsArray[] = operationsLine.split(";");
-                for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
-                    if (operationsArray[operationsIndexArray].equals(function)) {
-                        System.out.println("Such role already exists");
-                        status = false;
-                        break;
-                    } else {
-                        System.out.println("Such role doesnt exist");
-                        writer.newLine();//it already appends at the end
-                        writer.write(username + ":");
-                        for (String operation : operationsArray) {
-                            writer.write(operation + ";");
-                        }
-                        writer.write(function + ";");
-                        status = true;
-                    }
-                }
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+            if (splitString[0].equals(function)) {
+                usersArray = Arrays.copyOf(usersArray, usersArray.length + 1);
+                usersArray[usersArray.length - 1] = username;
+                String newUsersLine = String.join(";", usersArray);
+                writer.write(function + ":" + newUsersLine + ";");
+                writer.newLine();
+            } else {
+                writer.write(splitString[0] + ":" + usersLine);
+                writer.newLine();
             }
         }
-        
         reader.close();
         writer.close();
-        return status ? "true" : "false";
+        File oldFile = new File(fileIn);
+        oldFile.delete();
+        File newFile = new File(fileOut);
+        newFile.renameTo(oldFile);
+        return "true";
     }
     
     @Override
-    public String removeUserFunction(String username, String function)
-            throws IOException, FileNotFoundException, ParseException {
-        // we can deleteUser
-
+    public String removeUserFunction(String username, String function) throws IOException, FileNotFoundException, ParseException {
+        if (validateFunctions(function).equals("Invalid function")) {
+            return "Invalid operations";
+        }
         if (!userAlreadyInAccessControl(username)) {
-            System.out.println("Such user doesnt exist");
             return "false";
         }
-
-        if (!functionExists(username, function)) {
-            System.out.println("Such function doesnt exist");
-            return "true";
+        if (!validateUserPermissions(username, function)) {
+            return "Does not have permission";
         }
 
-        if (deleteUser(username).equals("true")) {
-            // and then create user with the same name but without the function
-            String operationsArray[] = getUserFunctions(username);
-            String newOperations[] = new String[operationsArray.length - 1];
-            for (int operationsIndexArray = 0; operationsIndexArray < operationsArray.length; operationsIndexArray++) {
-                if (operationsArray[operationsIndexArray].equals(function)) {
-                    continue;
-                } else {
-                    newOperations[operationsIndexArray] = operationsArray[operationsIndexArray];
+        String lines;
+        String fileIn = "accessControlLists.txt";
+        String fileOut = "accessControlListsTemp.txt";
+        BufferedReader reader = new BufferedReader(new FileReader(fileIn));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut));
+
+        while ((lines = reader.readLine()) != null) {
+            String splitString[] = lines.split(":");
+            String usersLine = splitString[1];
+            String usersArray[] = usersLine.split(";");
+            String newUsersLine = "";
+            if (splitString[0].equals(function)) {
+                for (int usersIndexArray = 0; usersIndexArray < usersArray.length; usersIndexArray++) {
+                    if (!usersArray[usersIndexArray].equals(username)) {
+                        newUsersLine += usersArray[usersIndexArray] + ";";
+                    }
                 }
-            }
-            String newOperationsString = String.join(";", newOperations);
-            if (createUser(username, newOperationsString).equals("true")) {
-                return "true";
+                writer.write(function + ":" + newUsersLine);
+                writer.newLine();
             } else {
-                return "false";
+                writer.write(splitString[0] + ":" + usersLine);
+                writer.newLine();
             }
-        } else {
-            return "false";
         }
+        reader.close();
+        writer.close();
+        File oldFile = new File(fileIn);
+        oldFile.delete();
+        File newFile = new File(fileOut);
+        newFile.renameTo(oldFile);
+        return "true";
     }
-
 }
 
