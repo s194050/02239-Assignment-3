@@ -13,6 +13,7 @@ import org.json.simple.parser.*;
 
 class RoleBasedAccessControl extends AccessControl {
     private boolean roleExists(String role) throws IOException, FileNotFoundException, ParseException {
+        // Check if role exists in the user_roles.json file
         boolean roleExists = false;
         JSONParser parser = new JSONParser();
         Object rbac_ = parser.parse(new FileReader("role_based_access_control.json"));
@@ -29,6 +30,7 @@ class RoleBasedAccessControl extends AccessControl {
         return roleExists;
     }
     private boolean userExistsInAccessControl(String username) throws IOException, FileNotFoundException, ParseException {
+        // Check if user exists in the user_roles.json file
         boolean userExists = false;
         JSONParser parser = new JSONParser();
         Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
@@ -36,8 +38,8 @@ class RoleBasedAccessControl extends AccessControl {
         JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
         for (int i = 0; i < roles_with_names.size(); i++) { // iterate through the roles
             String role = roles_with_names.keySet().toArray()[i].toString(); // get the role name
-            boolean userInAccessControl = userAlreadyInAccessControlWithRole(username, role);
-            if(userInAccessControl){
+            boolean userInAccessControl = userAlreadyInAccessControlWithRole(username, role); // check if user exists in the role
+            if(userInAccessControl){ // if user exists in the role
                 userExists = true;
                 break;
             }
@@ -45,6 +47,7 @@ class RoleBasedAccessControl extends AccessControl {
         return userExists;
     }
     private boolean userAlreadyInAccessControlWithRole(String username, String role) throws IOException, FileNotFoundException, ParseException {
+        // Check if user exists in the user_roles.json file with a specific role
         boolean userAlreadyInAccessControl = false;
         JSONParser parser = new JSONParser();
         Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
@@ -53,7 +56,7 @@ class RoleBasedAccessControl extends AccessControl {
         JSONArray users = (JSONArray) roles_with_names.get(role);
         for (int i = 0; i < users.size(); i++) {
             String this_user = users.get(i).toString();
-            if (this_user.equals(username)) {
+            if (this_user.equals(username)) { // if the user exists for the role
                 userAlreadyInAccessControl = true;
                 break;
             }
@@ -63,6 +66,7 @@ class RoleBasedAccessControl extends AccessControl {
 
     @Override
     public boolean isUserAdmin(String username) throws IOException, ParseException {
+        // Check if user is admin
         boolean isAdmin = false;
         try {
             JSONParser parser = new JSONParser();
@@ -88,6 +92,7 @@ class RoleBasedAccessControl extends AccessControl {
     @Override
     public boolean validateUserPermissions(String username, String function)
             throws IOException, FileNotFoundException, ParseException {
+        // Check if user has permissions to access a function
         boolean status = false;
         JSONParser parser = new JSONParser();
         Object rbac_ = parser.parse(new FileReader("role_based_access_control.json"));
@@ -122,15 +127,15 @@ class RoleBasedAccessControl extends AccessControl {
     public String createUser(String username, String role) throws IOException, FileNotFoundException, ParseException {
         boolean status = false;
         
-        if (!roleExists(role)) {
+        if (!roleExists(role)) { // if the role does not exist
             return "Role does not exist";
         }
-        if (userExistsInAccessControl(username)) {
+        if (userExistsInAccessControl(username)) { // if the user already exists in the access control
             return "User already in access control";
         }
 
         try{
-            JSONParser parser = new JSONParser();
+            JSONParser parser = new JSONParser(); // parse the users_roles.json file
 
             Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
             JSONObject users_roles = (JSONObject) users_roles_;
@@ -197,6 +202,7 @@ class RoleBasedAccessControl extends AccessControl {
     @Override
     public String changeUserRole(String username, String newRole)
             throws IOException, FileNotFoundException, ParseException {
+        // Change the role of a user to the new role
         String status = "false";
 
         if (!roleExists(newRole)) {

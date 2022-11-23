@@ -35,7 +35,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "print")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access print and was accepted");
 
                 for (Printer specficPrinter : printers) { // Loop through printers
                     if (specficPrinter.getPrinterName().equals(printer)) {
@@ -45,7 +45,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 }
                 return null; // Printer not found
             } else {
-//                System.out.println("You have no access to this operation");
+                System.out.println(username + ": Tried to access print and was denied");
                 return "You dont have access to this operation";
             }
 
@@ -61,7 +61,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "queue")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access queue and was accepted");
 
 
                 for (Printer specficPrinter : printers) { // Loop through printers
@@ -72,6 +72,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null; // Printer not found
 
             } else {
+                System.out.println(username + ": Tried to access queue and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -87,7 +88,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "topQueue")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access topQueue and was accepted");
 
 
                 for (Printer specficPrinter : printers) { // Loop through printers
@@ -98,6 +99,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null; // Printer not found
 
             } else {
+                System.out.println(username + " tried to access topQueue and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -112,12 +114,13 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "Start")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access Start and was accepted");
 
                 serverStatus = true;
                 return "Server is starting";
 
             } else {
+                System.out.println(username + ": Tried to access Start and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -133,10 +136,11 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "Stop")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access Stop and was accepted");
                 serverStatus = false;
                 return "Stopping the server";
             } else {
+                System.out.println(username + ": Tried to access Stop and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -149,7 +153,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
 
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "Restart")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access Restart and was accepted");
 
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
@@ -165,6 +169,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Server restarted";
 
             } else {
+                System.out.println(username + ": Tried to access Restart and was denied");
                 return "You dont have access to this operation";
             }
 
@@ -181,7 +186,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "status")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access status and was accepted");
 
                 for (Printer printer_element : printers) {
                     if (Objects.equals(printer, printer_element.getPrinterName())) {
@@ -195,6 +200,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                         + "Please try again. ";
 
             } else {
+                System.out.println(username + ": Tried to access status and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -209,7 +215,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "readConfig")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access readConfig and was accepted");
 
 
                 for (Parameter param : parameters) {
@@ -220,6 +226,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return null;
 
             } else {
+                System.out.println(username + ": Tried to access readConfig and was denied");
                 return "You dont have access to this operation";
             }
         } else {
@@ -236,7 +243,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
             }
             String username = SessionAuth.getUsernameFromToken(userToken);
             if (accessControl.validateUserPermissions(username, "setConfig")) {
-                System.out.println("You can do this action");
+                System.out.println(username + ": Tried to access setConfig and was accepted");
 
 
                 for (Parameter param : parameters) {
@@ -249,6 +256,7 @@ public class PrinterToClient extends UnicastRemoteObject implements ClientToPrin
                 return "Parameter " + parameter + " added with value " + value;
 
             } else {
+                System.out.println(username + ": Tried to access setConfig and was denied");
                 return "You dont have access to this operation";
             }
         } else {
