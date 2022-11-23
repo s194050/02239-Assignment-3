@@ -151,6 +151,7 @@ class RoleBasedAccessControl extends AccessControl {
 
             FileWriter fstream = new FileWriter("users_roles.json", false);
             BufferedWriter out = new BufferedWriter(fstream);
+            System.out.println(username + " added to " + role);
             // Write to file and make a new line.
             out.write(users_roles.toJSONString());
             out.flush();
@@ -183,6 +184,7 @@ class RoleBasedAccessControl extends AccessControl {
                         roles_with_names.put(role, users); // update the users for the role
                         users_roles.put("roles", roles_with_names); // update the roles_with_names
                         status = true;
+                        System.out.println(username + ": deleted from " + role);
                         break;
                     }
                 }
@@ -215,6 +217,7 @@ class RoleBasedAccessControl extends AccessControl {
         status = deleteUser(username);
         if (status.equals("true")) {
             status = createUser(username, newRole);
+            System.out.println(username + ": changed role to " + newRole);
         }
 
         return status;
