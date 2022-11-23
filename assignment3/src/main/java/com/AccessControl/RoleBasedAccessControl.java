@@ -28,8 +28,23 @@ class RoleBasedAccessControl extends AccessControl {
 
         return roleExists;
     }
-    
-    private boolean userAlreadyInAccessControl(String username, String role) throws IOException, FileNotFoundException, ParseException {
+    private boolean userExistsInAccessControl(String username) throws IOException, FileNotFoundException, ParseException {
+        boolean userExists = false;
+        JSONParser parser = new JSONParser();
+        Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
+        JSONObject users_roles = (JSONObject) users_roles_;
+        JSONObject roles_with_names = (JSONObject) users_roles.get("roles");
+        for (int i = 0; i < roles_with_names.size(); i++) { // iterate through the roles
+            String role = roles_with_names.keySet().toArray()[i].toString(); // get the role name
+            boolean userInAccessControl = userAlreadyInAccessControlWithRole(username, role);
+            if(userInAccessControl){
+                userExists = true;
+                break;
+            }
+        }
+        return userExists;
+    }
+    private boolean userAlreadyInAccessControlWithRole(String username, String role) throws IOException, FileNotFoundException, ParseException {
         boolean userAlreadyInAccessControl = false;
         JSONParser parser = new JSONParser();
         Object users_roles_ = parser.parse(new FileReader("users_roles.json"));
@@ -110,7 +125,7 @@ class RoleBasedAccessControl extends AccessControl {
         if (!roleExists(role)) {
             return "Role does not exist";
         }
-        if (userAlreadyInAccessControl(username, role)) {
+        if (userExistsInAccessControl(username)) {
             return "User already in access control";
         }
 
@@ -124,6 +139,7 @@ class RoleBasedAccessControl extends AccessControl {
             JSONArray users = (JSONArray) roles_with_names.get(role);
 
             // if the user does not exist, add the user to the role
+
             users.add(username);
             roles_with_names.put(role, users);
             users_roles.put("roles", roles_with_names);
@@ -186,7 +202,7 @@ class RoleBasedAccessControl extends AccessControl {
         if (!roleExists(newRole)) {
             return "Role does not exist";
         }
-        if (userAlreadyInAccessControl(username, newRole)) {
+        if (userAlreadyInAccessControlWithRole(username, newRole)) {
             return "User already in access control";
         }
 
