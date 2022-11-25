@@ -4,8 +4,8 @@ Run instructions
 This project is run by running the PrinterServer.Java file to start the server,
 then afterwards running the Client.Java file. You will then be presented with the
 login screen, for the Printer server.
-An example of PrinterServer and Client being run
 
+An example of PrinterServer and Client being run
 ================================================
 ```
 PrinterServer.main();
@@ -73,7 +73,7 @@ Access Control Options:
  ```
  Server is starting
  ```
-Now each option is able to be freely accepted, if the user is allowed to access the inputted function
+Now each option is able to be freely accepted as an option, if the user is allowed to access the inputted function
 
 Adding a user to the Access Control
 ===================================
@@ -105,4 +105,53 @@ Boby is now added as a user in the users_roles.json file.
 Deleting a user in the Access Control
 =====================================
 
+Using the previous test, Boby will now be removed from the access control.
+As such the following is inputted:
+```
+13
+```
+The output is then:
+```
+Enter the username of the user you want to delete from the access control
+```
+As Boby is the user to be removed the input to the terminal is then Boby. The input is
+case sensitive.
+```
+Enter the username of the user you want to delete from the access control
+Boby
+User Boby deleted from access control
+```
+Boby is now removed from the access control, and removed from the users_roles.json file
 
+Changing the role of a user in the Access Control
+=================================================
+
+For this test George will be changing role from a user to a service technician.
+As such the following is inputted:
+```
+14
+```
+With the following output:
+```
+Enter the username of the user you want to change the role of 
+```
+George is then inputted and presented with the following output:
+```
+Enter the username of the user you want to change the role of
+George
+Enter the name of the role you want to change the users permissions to
+```
+The roles are case sensitive and needs to be inputted as specified in the users_role.json
+As such the input is as follows:
+```
+Enter the name of the role you want to change the users permissions to
+service_technician
+User George changed to role service_technician
+```
+George is now assigned as a service technician, and changes role in the users_role.json file as well.
+
+
+Using the other options of the printer server
+=============================================
+
+Choosing any other functions, can be done by following the instructions on-screen.
