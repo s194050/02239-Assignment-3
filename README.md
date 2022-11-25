@@ -5,7 +5,8 @@ This project is run by running the PrinterServer.Java file to start the server,
 then afterwards running the Client.Java file. You will first be presented with the
 selection of the Access Control System, this input will create an instance of the correct Class in the server.
 After that, the user is presented with the login screen, for the Printer Server.
-Tip: the password for each user is the same as their username.
+<br />
+_Tip: the password for each user is the same as their username._
 
 An example of PrinterServer and Client being run
 ================================================
