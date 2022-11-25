@@ -1,9 +1,11 @@
 Run instructions
 ================
+
 This project is run by running the PrinterServer.Java file to start the server,
 then afterwards running the Client.Java file. You will then be presented with the
 login screen, for the Printer server.
 An example of PrinterServer and Client being run
+
 ================================================
 ```
 PrinterServer.main();
@@ -62,6 +64,7 @@ Access Control Options:
  Only admin users are presented with the Access Control Options, and are the only
  ones allowed to access it.
  As the printer server is not started, before doing anything else the server has to be started
+ 
  As such option 1 is selected:
  ```
   1
@@ -70,3 +73,36 @@ Access Control Options:
  ```
  Server is starting
  ```
+Now each option is able to be freely accepted, if the user is allowed to access the inputted function
+
+Adding a user to the Access Control
+===================================
+Depending on policy selected the output will be slightly different, however the differences are minor.
+For this test the RBAC policy is selected, and will thus show that output.
+
+The following is inputted into the terminal:
+```
+12
+```
+You are now presented with the following output:
+```
+Enter the username of the user you want to add to the access control
+```
+The username needs to be a valid user, and has to already be existing in the system. All the users 
+described in the Assignment 3 report, are included.
+
+For this test, a user named Boby is added to the access control as a user.
+As such the following output is presented, while following the on-screen instructions:
+```
+Enter the username of the user you want to add to the access control
+Boby
+Enter the name of the role you want to add the user to
+user
+User Boby added to access control with role user
+```
+Boby is now added as a user in the users_roles.json file.
+
+Deleting a user in the Access Control
+=====================================
+
+
