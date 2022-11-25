@@ -157,4 +157,4 @@ George is now assigned as a service technician, and changes role in the users_ro
 Using the other options of the printer server
 =============================================
 
-Choosing any other functions, can be done by following the instructions on-screen.
+Choosing any other functions, and running them can be done by following the instructions on-screen.
